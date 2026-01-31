@@ -1,4 +1,14 @@
-import { Fn, positionGeometry, sin, time, vec3 } from "three/tsl";
+import {
+  abs,
+  float,
+  Fn,
+  mix,
+  positionGeometry,
+  sin,
+  smoothstep,
+  time,
+  vec3,
+} from "three/tsl";
 
 interface WavesUniforms {
   // colorA: ShaderNodeObject<UniformNode<Color>>;
@@ -9,15 +19,26 @@ interface WavesUniforms {
   // marbleTime: ShaderNodeObject<UniformNode<number>>;
 }
 
-// Originally from https://github.com/boytchev/tsl-textures/blob/main/src/caustics.js
 export const waves = ({}: WavesUniforms) =>
   Fn(() => {
+    const warpBase = float(1);
+    const warpFreq = 5;
     const pos = positionGeometry.mul(
-      vec3(1, sin(positionGeometry.z.mul(10)), 1),
+      vec3(1, sin(positionGeometry.z.mul(warpFreq)).add(warpBase), 1),
     );
-    const y = pos.y.mul(100).sub(time.mul(15));
 
-    const c = sin(y);
+    const stripeFreq = 50;
+    const y = pos.y.mul(stripeFreq).sub(time.mul(8));
 
-    return vec3(c);
+    // Phase offsets for RGB (simulate wavelength separation)
+    const phaseR = 0.0;
+    const phaseG = 0.1;
+    const phaseB = 0.2;
+
+    // Sine for each channel with phase offset
+    const r = sin(y.add(phaseR * Math.PI * 2));
+    const g = sin(y.add(phaseG * Math.PI * 2));
+    const b = sin(y.add(phaseB * Math.PI * 2));
+
+    return vec3(r, g, b);
   });
