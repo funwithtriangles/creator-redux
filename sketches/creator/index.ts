@@ -47,7 +47,9 @@ export default class Creator {
 
   constructor() {
     const wavesNode = waves2({ ...this.uniforms })();
-    const objectMaterial = new MeshBasicNodeMaterial({
+    const objectMaterial = new MeshStandardNodeMaterial({
+      roughness: 0,
+      metalness: 1,
       // map: matcapMat.matcap,
     });
 
@@ -57,7 +59,7 @@ export default class Creator {
     //   metalness: 0.0,
     // });
 
-    objectMaterial.colorNode = wavesNode;
+    objectMaterial.emissiveNode = wavesNode;
     // const causticsNode = caustics({ ...this.uniforms })();
 
     // objectMaterial.colorNode = causticsNode;
