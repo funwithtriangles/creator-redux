@@ -10,6 +10,8 @@ import {
   MeshPhysicalNodeMaterial,
   Uniform,
   UniformNode,
+  MeshBasicMaterial,
+  MeshBasicNodeMaterial,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 import matcapUrl from "./matcap.jpg";
@@ -18,6 +20,7 @@ import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 import { caustics } from "./caustics";
 import { float, uniform } from "three/tsl";
+import { waves as waves2 } from "./waves";
 
 const gltfLoader = new GLTFLoader();
 const textureLoader = new TextureLoader();
@@ -43,20 +46,26 @@ export default class Creator {
   };
 
   constructor() {
-    const objectMaterial = new MeshPhysicalNodeMaterial({
-      color: 0xcccccc,
-      roughness: 0,
-      metalness: 0.0,
+    const wavesNode = waves2({ ...this.uniforms })();
+    const objectMaterial = new MeshBasicNodeMaterial({
+      // map: matcapMat.matcap,
     });
 
-    const causticsNode = caustics({ ...this.uniforms })();
+    // const objectMaterial = new MeshPhysicalNodeMaterial({
+    //   color: 0xcccccc,
+    //   roughness: 0,
+    //   metalness: 0.0,
+    // });
 
-    objectMaterial.colorNode = causticsNode;
-    objectMaterial.iridescenceNode = causticsNode
-      // .oneMinus()
-      .mul(this.uniforms.iridescence);
+    objectMaterial.colorNode = wavesNode;
+    // const causticsNode = caustics({ ...this.uniforms })();
 
-    objectMaterial.iridescenceIORNode = this.uniforms.iridescenceIOR;
+    // objectMaterial.colorNode = causticsNode;
+    // objectMaterial.iridescenceNode = causticsNode
+    //   // .oneMinus()
+    //   .mul(this.uniforms.iridescence);
+
+    // objectMaterial.iridescenceIORNode = this.uniforms.iridescenceIOR;
 
     this.root.add(light1);
     this.root.add(light2);

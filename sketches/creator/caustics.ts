@@ -32,6 +32,7 @@ export const caustics = ({
   marbleTime,
 }: CausticsUniforms) =>
   Fn(() => {
+    console.log("wow");
     var pos = positionGeometry
       .mul(exp(marbleScale.sub(1)))
       .add(1389)
