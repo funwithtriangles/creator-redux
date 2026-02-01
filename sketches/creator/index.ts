@@ -43,6 +43,8 @@ light2.position.set(1, -1, -1);
 export default class Creator {
   root = new Group();
   group?: Object3D;
+  pieces: Mesh[] = [];
+  time = 0;
 
   uniforms = {
     ...sketchUniforms,
@@ -91,6 +93,8 @@ export default class Creator {
       obj.scene.traverse((child) => {
         if (child instanceof Mesh) {
           child.material = objectMaterial;
+
+          this.pieces.push(child);
         }
       });
 
@@ -112,5 +116,17 @@ export default class Creator {
 
     this.uniforms.warpNoiseTime.value +=
       d * this.uniforms.warpNoiseSpeed.value * 0.01;
+
+    // Modulate scale of each piece
+    this.time += d * 0.05 * p.pieceScaleSpeed;
+    for (let i = 0; i < this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      const offset =
+        piece.position.x * p.pieceWaveFreqX +
+        piece.position.y * p.pieceWaveFreqY;
+      const scale =
+        p.pieceBaseScale + Math.sin(this.time + offset) * p.pieceScaleAmp;
+      piece.scale.setScalar(scale);
+    }
   }
 }

@@ -187,6 +187,41 @@ export const uniformsParamsConfig = [
       },
     ],
   },
+  {
+    groupTitle: "Pieces",
+    params: [
+      {
+        key: "pieceBaseScale",
+        defaultValue: 1,
+        sliderMin: 0,
+        sliderMax: 2,
+      },
+      {
+        key: "pieceScaleAmp",
+        defaultValue: 0.2,
+        sliderMin: 0,
+        sliderMax: 1,
+      },
+      {
+        key: "pieceScaleSpeed",
+        defaultValue: 1,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+      {
+        key: "pieceWaveFreqX",
+        defaultValue: 0,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+      {
+        key: "pieceWaveFreqY",
+        defaultValue: 0.5,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+    ],
+  },
 ] as const;
 
 export default {
