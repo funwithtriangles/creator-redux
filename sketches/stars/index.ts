@@ -10,6 +10,8 @@ import {
   shapeCircle,
   uniform,
   float,
+  abs,
+  smoothstep,
 } from "three/tsl";
 
 interface ParticleVert {
@@ -38,6 +40,8 @@ export default class Stars {
 
   sizeUniform = uniform(16);
   opacityUniform = uniform(1);
+  hiddenRangeStartUniform = uniform(0);
+  hiddenRangeEndUniform = uniform(0);
   material: PointsNodeMaterial;
 
   constructor() {
@@ -71,16 +75,24 @@ export default class Stars {
     this.sizesAttribute = new InstancedBufferAttribute(this.sizesArray, 1);
 
     // Create material with TSL nodes
+    const positionNode = instancedBufferAttribute(this.positionsAttribute);
+    const xPos = positionNode.x;
+    const hiddenFactor = smoothstep(
+      this.hiddenRangeStartUniform,
+      this.hiddenRangeEndUniform,
+      abs(xPos),
+    );
+
     this.material = new PointsNodeMaterial({
       transparent: true,
       depthWrite: false,
       sizeAttenuation: true,
       colorNode: instancedBufferAttribute(this.colorsAttribute),
-      positionNode: instancedBufferAttribute(this.positionsAttribute),
+      positionNode: positionNode,
       sizeNode: instancedBufferAttribute(this.sizesAttribute).mul(
         this.sizeUniform,
       ),
-      opacityNode: shapeCircle().mul(this.opacityUniform),
+      opacityNode: shapeCircle().mul(this.opacityUniform).mul(hiddenFactor),
     });
 
     // Create sprite with count
@@ -152,6 +164,8 @@ export default class Stars {
     this.range.y = p.range[1] * 10000;
     this.range.z = p.range[2] * 10000;
     this.opacityUniform.value = p.opacity;
+    this.hiddenRangeStartUniform.value = p.hiddenRangeStart ?? 0;
+    this.hiddenRangeEndUniform.value = p.hiddenRangeEnd ?? 0;
     this.sprite.position.z = p.depth ?? 0;
     this.sizeUniform.value = p.pointSize;
 
@@ -291,6 +305,20 @@ export default class Stars {
           defaultValue: 16,
           sliderMin: 1,
           sliderMax: 1000,
+        },
+        {
+          title: "Hidden Range Start",
+          key: "hiddenRangeStart",
+          defaultValue: 0,
+          sliderMin: 0,
+          sliderMax: 10000,
+        },
+        {
+          title: "Hidden Range End",
+          key: "hiddenRangeEnd",
+          defaultValue: 0,
+          sliderMin: 0,
+          sliderMax: 10000,
         },
       ],
       shots: [],
