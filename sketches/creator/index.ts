@@ -13,6 +13,8 @@ import {
   MeshBasicMaterial,
   MeshBasicNodeMaterial,
   MeshPhongNodeMaterial,
+  DoubleSide,
+  PointLight,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 import matcapUrl from "./matcap.jpg";
@@ -29,13 +31,13 @@ const matcapMat = new MeshMatcapMaterial();
 
 // Originally from https://github.com/boytchev/tsl-textures/blob/main/src/caustics.js
 
-const light1 = new DirectionalLight(0xffffff, 0.7);
+const light1 = new DirectionalLight(0xffffff, 1);
 light1.position.set(0, 1, 1);
-light1.castShadow = true;
+// light1.castShadow = true;
 
-const light2 = new DirectionalLight(0xffffff, 0.3);
+const light2 = new DirectionalLight(0xffffff, 1);
 light2.position.set(1, -1, -1);
-light2.castShadow = true;
+// light2.castShadow = true;
 
 export default class Creator {
   root = new Group();
@@ -50,17 +52,20 @@ export default class Creator {
 
   constructor() {
     const wavesNode = stripes({ ...this.uniforms })();
-    const objectMaterial = new MeshPhongNodeMaterial({
-      shininess: 1,
-      flatShading: true,
-      // map: matcapMat.matcap,
+    // const objectMaterial = new MeshPhongNodeMaterial({
+    //   flatShading: true,
+    //   specular: 0xffffff,
+    //   // map: matcapMat.matcap,
+    // });
+
+    const objectMaterial = new MeshStandardNodeMaterial({
+      roughness: 0,
+      metalness: 1,
+      // transparent: true,
+      // side: DoubleSide,
     });
 
-    // const objectMaterial = new MeshPhysicalNodeMaterial({
-    //   color: 0xcccccc,
-    //   roughness: 0,
-    //   metalness: 0.0,
-    // });
+    // objectMaterial.opacityNode = wavesNode;
 
     objectMaterial.emissiveNode = wavesNode;
     // const causticsNode = caustics({ ...this.uniforms })();
