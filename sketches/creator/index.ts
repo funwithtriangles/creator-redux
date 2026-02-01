@@ -21,7 +21,7 @@ import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 import { caustics } from "./caustics";
 import { float, uniform } from "three/tsl";
-import { waves as waves2 } from "./waves";
+import { stripes } from "./stripes";
 
 const gltfLoader = new GLTFLoader();
 const textureLoader = new TextureLoader();
@@ -44,10 +44,12 @@ export default class Creator {
   uniforms = {
     ...sketchUniforms,
     marbleTime: uniform(0),
+    stripeTime: uniform(0),
+    warpNoiseTime: uniform(0),
   };
 
   constructor() {
-    const wavesNode = waves2({ ...this.uniforms })();
+    const wavesNode = stripes({ ...this.uniforms })();
     const objectMaterial = new MeshPhongNodeMaterial({
       shininess: 1,
       flatShading: true,
@@ -95,5 +97,11 @@ export default class Creator {
 
     this.uniforms.marbleTime.value +=
       d * this.uniforms.marbleSpeed.value * 0.01;
+
+    this.uniforms.stripeTime.value +=
+      d * this.uniforms.stripeSpeed.value * 0.01;
+
+    this.uniforms.warpNoiseTime.value +=
+      d * this.uniforms.warpNoiseSpeed.value * 0.01;
   }
 }
