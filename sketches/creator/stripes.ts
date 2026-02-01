@@ -1,8 +1,11 @@
 import {
   abs,
+  attribute,
   dot,
   float,
   Fn,
+  fwidth,
+  min,
   mix,
   positionGeometry,
   normalGeometry,
@@ -45,6 +48,8 @@ interface WavesUniforms {
   phaseBNoiseMult: ShaderNodeObject<UniformNode<number>>;
   shineIntensity: ShaderNodeObject<UniformNode<number>>;
   shinePower: ShaderNodeObject<UniformNode<number>>;
+  frostedEdgeIntensity: ShaderNodeObject<UniformNode<number>>;
+  frostedEdgeThickness: ShaderNodeObject<UniformNode<number>>;
 }
 
 export const stripes = ({
@@ -68,6 +73,8 @@ export const stripes = ({
   phaseBNoiseMult,
   shineIntensity,
   shinePower,
+  frostedEdgeIntensity,
+  frostedEdgeThickness,
 }: WavesUniforms) =>
   Fn(() => {
     const warpNoise = mx_noise_float(
@@ -106,5 +113,15 @@ export const stripes = ({
     const NdotV = max(dot(normal, viewDir), float(0));
     const shine = pow(NdotV, shinePower).mul(shineIntensity);
 
-    return stripeColor.add(shine);
+    // Frosted edges effect using barycentric coordinates
+    const center = attribute("center", "vec3");
+    const minCenter = min(min(center.x, center.y), center.z);
+    const edgeFactor = smoothstep(
+      float(0),
+      frostedEdgeThickness,
+      minCenter,
+    ).oneMinus();
+    const frostedEdge = edgeFactor.mul(frostedEdgeIntensity);
+
+    return stripeColor.add(shine).add(frostedEdge);
   });

@@ -173,6 +173,18 @@ export const uniformsParamsConfig = [
         sliderMin: 0.1,
         sliderMax: 10,
       },
+      {
+        key: "frostedEdgeIntensity",
+        defaultValue: 0,
+        sliderMin: 0,
+        sliderMax: 2,
+      },
+      {
+        key: "frostedEdgeThickness",
+        defaultValue: 0.3,
+        sliderMin: 0.01,
+        sliderMax: 0.5,
+      },
     ],
   },
 ] as const;
