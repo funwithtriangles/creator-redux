@@ -15,6 +15,7 @@ import {
   MeshPhongNodeMaterial,
   DoubleSide,
   PointLight,
+  MeshNormalMaterial,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 import matcapUrl from "./matcap.jpg";
@@ -32,7 +33,7 @@ const matcapMat = new MeshMatcapMaterial();
 // Originally from https://github.com/boytchev/tsl-textures/blob/main/src/caustics.js
 
 const light1 = new DirectionalLight(0xffffff, 1);
-light1.position.set(0, 1, 1);
+light1.position.set(0, 1, -1);
 // light1.castShadow = true;
 
 const light2 = new DirectionalLight(0xffffff, 1);
@@ -52,18 +53,20 @@ export default class Creator {
 
   constructor() {
     const wavesNode = stripes({ ...this.uniforms })();
-    // const objectMaterial = new MeshPhongNodeMaterial({
-    //   flatShading: true,
-    //   specular: 0xffffff,
-    //   // map: matcapMat.matcap,
+    const objectMaterial = new MeshPhongNodeMaterial({
+      flatShading: true,
+      specular: 0xffffff,
+      // map: matcapMat.matcap,
+    });
+
+    // const objectMaterial = new MeshStandardNodeMaterial({
+    //   roughness: 0,
+    //   metalness: 1,
+    //   // transparent: true,
+    //   // side: DoubleSide,
     // });
 
-    const objectMaterial = new MeshStandardNodeMaterial({
-      roughness: 0,
-      metalness: 1,
-      // transparent: true,
-      // side: DoubleSide,
-    });
+    // const objectMaterial = new MeshNormalMaterial();
 
     // objectMaterial.opacityNode = wavesNode;
 

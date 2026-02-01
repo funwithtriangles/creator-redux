@@ -161,6 +161,18 @@ export const uniformsParamsConfig = [
         sliderMin: 0,
         sliderMax: 1,
       },
+      {
+        key: "shineIntensity",
+        defaultValue: 0.5,
+        sliderMin: 0,
+        sliderMax: 2,
+      },
+      {
+        key: "shinePower",
+        defaultValue: 2,
+        sliderMin: 0.1,
+        sliderMax: 10,
+      },
     ],
   },
 ] as const;

@@ -5,6 +5,11 @@ import {
   Fn,
   mix,
   positionGeometry,
+  normalGeometry,
+  cameraPosition,
+  normalize,
+  pow,
+  max,
   sin,
   smoothstep,
   time,
@@ -13,6 +18,9 @@ import {
   mx_noise_vec3,
   mx_noise_float,
   ShaderNodeObject,
+  modelWorldMatrix,
+  positionWorld,
+  transformedNormalWorld,
 } from "three/tsl";
 import { UniformNode } from "three/webgpu";
 
@@ -35,6 +43,8 @@ interface WavesUniforms {
   phaseRNoiseMult: ShaderNodeObject<UniformNode<number>>;
   phaseGNoiseMult: ShaderNodeObject<UniformNode<number>>;
   phaseBNoiseMult: ShaderNodeObject<UniformNode<number>>;
+  shineIntensity: ShaderNodeObject<UniformNode<number>>;
+  shinePower: ShaderNodeObject<UniformNode<number>>;
 }
 
 export const stripes = ({
@@ -56,6 +66,8 @@ export const stripes = ({
   phaseRNoiseMult,
   phaseGNoiseMult,
   phaseBNoiseMult,
+  shineIntensity,
+  shinePower,
 }: WavesUniforms) =>
   Fn(() => {
     const warpNoise = mx_noise_float(
@@ -86,5 +98,13 @@ export const stripes = ({
     const g = sin(stripies.add(phaseG.mul(Math.PI * 2)));
     const b = sin(stripies.add(phaseB.mul(Math.PI * 2)));
 
-    return vec3(r, g, b);
+    const stripeColor = vec3(r, g, b);
+
+    // Calculate view-dependent shine based on normal
+    const viewDir = normalize(cameraPosition.sub(positionWorld));
+    const normal = transformedNormalWorld;
+    const NdotV = max(dot(normal, viewDir), float(0));
+    const shine = pow(NdotV, shinePower).mul(shineIntensity);
+
+    return stripeColor.add(shine);
   });
