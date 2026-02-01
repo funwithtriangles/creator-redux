@@ -12,6 +12,7 @@ import {
   UniformNode,
   MeshBasicMaterial,
   MeshBasicNodeMaterial,
+  MeshPhongNodeMaterial,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 import matcapUrl from "./matcap.jpg";
@@ -47,9 +48,9 @@ export default class Creator {
 
   constructor() {
     const wavesNode = waves2({ ...this.uniforms })();
-    const objectMaterial = new MeshStandardNodeMaterial({
-      roughness: 0,
-      metalness: 1,
+    const objectMaterial = new MeshPhongNodeMaterial({
+      shininess: 1,
+      flatShading: true,
       // map: matcapMat.matcap,
     });
 
@@ -69,8 +70,8 @@ export default class Creator {
 
     // objectMaterial.iridescenceIORNode = this.uniforms.iridescenceIOR;
 
-    this.root.add(light1);
-    this.root.add(light2);
+    // this.root.add(light1);
+    // this.root.add(light2);
 
     gltfLoader.load(glbUrl, (obj) => {
       this.group = obj.scene;
