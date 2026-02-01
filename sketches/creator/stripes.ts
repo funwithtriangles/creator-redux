@@ -1,10 +1,8 @@
 import {
   abs,
-  attribute,
   dot,
   float,
   Fn,
-  fwidth,
   min,
   mix,
   positionGeometry,
@@ -24,6 +22,7 @@ import {
   modelWorldMatrix,
   positionWorld,
   transformedNormalWorld,
+  normalWorld,
 } from "three/tsl";
 import { UniformNode } from "three/webgpu";
 
@@ -49,7 +48,7 @@ interface WavesUniforms {
   shineIntensity: ShaderNodeObject<UniformNode<number>>;
   shinePower: ShaderNodeObject<UniformNode<number>>;
   frostedEdgeIntensity: ShaderNodeObject<UniformNode<number>>;
-  frostedEdgeThickness: ShaderNodeObject<UniformNode<number>>;
+  rimPower: ShaderNodeObject<UniformNode<number>>;
 }
 
 export const stripes = ({
@@ -74,7 +73,7 @@ export const stripes = ({
   shineIntensity,
   shinePower,
   frostedEdgeIntensity,
-  frostedEdgeThickness,
+  rimPower,
 }: WavesUniforms) =>
   Fn(() => {
     const warpNoise = mx_noise_float(
@@ -109,19 +108,13 @@ export const stripes = ({
 
     // Calculate view-dependent shine based on normal
     const viewDir = normalize(cameraPosition.sub(positionWorld));
-    const normal = transformedNormalWorld;
+    const normal = normalWorld;
     const NdotV = max(dot(normal, viewDir), float(0));
     const shine = pow(NdotV, shinePower).mul(shineIntensity);
 
-    // Frosted edges effect using barycentric coordinates
-    const center = attribute("center", "vec3");
-    const minCenter = min(min(center.x, center.y), center.z);
-    const edgeFactor = smoothstep(
-      float(0),
-      frostedEdgeThickness,
-      minCenter,
-    ).oneMinus();
-    const frostedEdge = edgeFactor.mul(frostedEdgeIntensity);
+    // Rim/silhouette edge effect (Fresnel-based)
+    const rimFactor = pow(float(1).sub(NdotV), rimPower);
+    const rimEdge = rimFactor.mul(frostedEdgeIntensity);
 
-    return stripeColor.add(shine).add(frostedEdge);
+    return stripeColor.add(shine).add(rimEdge);
   });

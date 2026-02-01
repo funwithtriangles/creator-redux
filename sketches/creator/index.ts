@@ -16,8 +16,6 @@ import {
   DoubleSide,
   PointLight,
   MeshNormalMaterial,
-  BufferAttribute,
-  Vector3,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 import matcapUrl from "./matcap.jpg";
@@ -31,29 +29,6 @@ import { stripes } from "./stripes";
 const gltfLoader = new GLTFLoader();
 const textureLoader = new TextureLoader();
 const matcapMat = new MeshMatcapMaterial();
-
-// Helper to set up barycentric coordinates for frosted edge effect
-const setupTriCenterAttributes = (geometry) => {
-  if (geometry.index) {
-    geometry = geometry.toNonIndexed();
-  }
-
-  const vectors = [
-    new Vector3(1, 0, 0),
-    new Vector3(0, 1, 0),
-    new Vector3(0, 0, 1),
-  ];
-
-  const position = geometry.attributes.position;
-  const centers = new Float32Array(position.count * 3);
-
-  for (let i = 0, l = position.count; i < l; i++) {
-    vectors[i % 3].toArray(centers, i * 3);
-  }
-
-  geometry.setAttribute("center", new BufferAttribute(centers, 3));
-  return geometry;
-};
 
 // Originally from https://github.com/boytchev/tsl-textures/blob/main/src/caustics.js
 
@@ -115,8 +90,6 @@ export default class Creator {
 
       obj.scene.traverse((child) => {
         if (child instanceof Mesh) {
-          // Set up barycentric coordinates for frosted edge effect
-          child.geometry = setupTriCenterAttributes(child.geometry);
           child.material = objectMaterial;
         }
       });
