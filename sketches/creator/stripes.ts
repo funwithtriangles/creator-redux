@@ -33,7 +33,8 @@ interface WavesUniforms {
   stripeDirY: ShaderNodeObject<UniformNode<number>>;
   stripeDirZ: ShaderNodeObject<UniformNode<number>>;
   stripeWarpFreq: ShaderNodeObject<UniformNode<number>>;
-  stripeWarpBase: ShaderNodeObject<UniformNode<number>>;
+  stripeWarpAmp: ShaderNodeObject<UniformNode<number>>;
+  stripeWarpPhase: ShaderNodeObject<UniformNode<number>>;
   warpNoiseFreq: ShaderNodeObject<UniformNode<number>>;
   warpNoiseTime: ShaderNodeObject<UniformNode<number>>;
   warpNoiseAmp: ShaderNodeObject<UniformNode<number>>;
@@ -58,7 +59,8 @@ export const stripes = ({
   stripeDirY,
   stripeDirZ,
   stripeWarpFreq,
-  stripeWarpBase,
+  stripeWarpPhase,
+  stripeWarpAmp,
   warpNoiseFreq,
   warpNoiseTime,
   warpNoiseAmp,
@@ -81,8 +83,11 @@ export const stripes = ({
     ).mul(warpNoiseAmp);
 
     const pos = positionGeometry.mul(
-      sin(positionGeometry.z.mul(stripeWarpFreq).add(warpNoise)).add(
-        stripeWarpBase,
+      sin(
+        positionGeometry.z
+          .mul(stripeWarpFreq)
+          .add(warpNoise)
+          .add(stripeWarpPhase),
       ),
     );
 

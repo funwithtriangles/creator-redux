@@ -90,7 +90,7 @@ export const uniformsParamsConfig = [
         sliderMax: 10,
       },
       {
-        key: "stripeWarpBase",
+        key: "stripeWarpPhase",
         defaultValue: 0,
         sliderMin: -5,
         sliderMax: 5,
