@@ -66,6 +66,24 @@ export const uniformsParamsConfig = [
         sliderMax: 50,
       },
       {
+        key: "stripeDirX",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "stripeDirY",
+        defaultValue: 1,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "stripeDirZ",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
         key: "stripeWarpFreq",
         defaultValue: 1,
         sliderMin: 0,

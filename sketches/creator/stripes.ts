@@ -1,5 +1,6 @@
 import {
   abs,
+  dot,
   float,
   Fn,
   mix,
@@ -18,6 +19,9 @@ import { UniformNode } from "three/webgpu";
 interface WavesUniforms {
   stripeFreq: ShaderNodeObject<UniformNode<number>>;
   stripeTime: ShaderNodeObject<UniformNode<number>>;
+  stripeDirX: ShaderNodeObject<UniformNode<number>>;
+  stripeDirY: ShaderNodeObject<UniformNode<number>>;
+  stripeDirZ: ShaderNodeObject<UniformNode<number>>;
   stripeWarpFreq: ShaderNodeObject<UniformNode<number>>;
   stripeWarpBase: ShaderNodeObject<UniformNode<number>>;
   warpNoiseFreq: ShaderNodeObject<UniformNode<number>>;
@@ -36,6 +40,9 @@ interface WavesUniforms {
 export const stripes = ({
   stripeFreq,
   stripeTime,
+  stripeDirX,
+  stripeDirY,
+  stripeDirZ,
   stripeWarpFreq,
   stripeWarpBase,
   warpNoiseFreq,
@@ -55,20 +62,15 @@ export const stripes = ({
       positionGeometry.mul(warpNoiseFreq).add(warpNoiseTime),
     ).mul(warpNoiseAmp);
 
-    const pos = positionGeometry
-      // .add(mx_noise_vec3(positionGeometry.mul(0.5).add(time.mul(0.1))).mul(2))
-      .mul(
-        // TODO: expermment with positionGeometry.x for different wave direction
-        vec3(
-          1,
-          sin(positionGeometry.z.mul(stripeWarpFreq).add(warpNoise)).add(
-            stripeWarpBase,
-          ),
-          1,
-        ),
-      );
+    const pos = positionGeometry.mul(
+      sin(positionGeometry.z.mul(stripeWarpFreq).add(warpNoise)).add(
+        stripeWarpBase,
+      ),
+    );
 
-    const y = pos.y.mul(stripeFreq).add(stripeTime);
+    const stripies = dot(pos, vec3(stripeDirX, stripeDirY, stripeDirZ))
+      .mul(stripeFreq)
+      .add(stripeTime);
 
     const offsetNoise = mx_noise_float(
       positionGeometry.mul(offsetNoiseFreq),
@@ -80,9 +82,9 @@ export const stripes = ({
     const phaseB = phaseBOffset.add(offsetNoise.mul(phaseBNoiseMult));
 
     // Sine for each channel with phase offset
-    const r = sin(y.add(phaseR.mul(Math.PI * 2)));
-    const g = sin(y.add(phaseG.mul(Math.PI * 2)));
-    const b = sin(y.add(phaseB.mul(Math.PI * 2)));
+    const r = sin(stripies.add(phaseR.mul(Math.PI * 2)));
+    const g = sin(stripies.add(phaseG.mul(Math.PI * 2)));
+    const b = sin(stripies.add(phaseB.mul(Math.PI * 2)));
 
     return vec3(r, g, b);
   });
