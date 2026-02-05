@@ -98,10 +98,10 @@ export default class Creator {
         }
       });
 
-      textureLoader.load(matcapUrl, (matcap) => {
-        matcapMat.matcap = matcap;
-        matcapMat.needsUpdate = true;
-      });
+      // textureLoader.load(matcapUrl, (matcap) => {
+      //   matcapMat.matcap = matcap;
+      //   matcapMat.needsUpdate = true;
+      // });
     });
   }
 
