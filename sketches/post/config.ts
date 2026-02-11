@@ -260,6 +260,50 @@ export const borderParamsConfig = [
   },
 ];
 
+export const miniSceneParamsConfig = [
+  {
+    key: "miniScene_opacity",
+    title: "Opacity",
+    defaultValue: 1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniScene_scale",
+    title: "Scale",
+    defaultValue: 0.25,
+    sliderMin: 0.05,
+    sliderMax: 1,
+  },
+  {
+    key: "miniScene_posX",
+    title: "Position X",
+    defaultValue: 0.75,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniScene_posY",
+    title: "Position Y",
+    defaultValue: 0.75,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniScene_spinSpeed",
+    title: "Spin Speed",
+    defaultValue: 1,
+    sliderMin: 0,
+    sliderMax: 5,
+  },
+  {
+    key: "miniScene_cubeColor",
+    title: "Cube Color",
+    valueType: "rgb",
+    defaultValue: [1, 1, 1],
+  },
+];
+
 export default {
   title: "Post",
   description: "Post-processing effects",
@@ -295,6 +339,10 @@ export default {
     {
       groupTitle: "Border",
       params: borderParamsConfig,
+    },
+    {
+      groupTitle: "Mini Scene",
+      params: miniSceneParamsConfig,
     },
   ],
 };

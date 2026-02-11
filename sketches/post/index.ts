@@ -7,6 +7,10 @@ import {
   screenUV,
   texture,
   uniform,
+  vec2,
+  step,
+  float,
+  clamp,
   type ShaderNodeObject,
 } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
@@ -18,6 +22,7 @@ import {
   noiseParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
+  miniSceneParamsConfig,
 } from "./config";
 import { hsl } from "./effects/hsl";
 import { noise } from "./effects/noise";
@@ -27,6 +32,7 @@ import { gradientMap } from "./effects/gradientMap";
 import { bloom } from "./effects/bloom";
 import Logo from "./effects/logo";
 import { Border } from "./effects/border";
+import { MiniScene } from "./effects/miniScene";
 
 const uniformsParamsConfig = [
   ...bloomParamsConfig,
@@ -36,6 +42,7 @@ const uniformsParamsConfig = [
   ...logoParamsConfig,
   ...noiseParamsConfig,
   ...borderParamsConfig,
+  ...miniSceneParamsConfig,
 ];
 
 export default class Post {
@@ -44,11 +51,15 @@ export default class Post {
 
   logo = new Logo();
   border = new Border();
+  miniScene = new MiniScene();
+  miniScene_aspect = uniform(16 / 9);
 
   constructor(props) {
+    this.renderer = props.renderer;
     this.shoutout = new Shoutout(props);
     this.shoutoutTex = texture(this.shoutout.texture);
     this.borderTex = texture(this.border.texture);
+    this.miniSceneTex = texture(this.miniScene.texture);
     // window._xray_mask = this.shoutoutTex.context({ getUV: () => screenUV }).r;
   }
 
@@ -97,6 +108,27 @@ export default class Post {
     const borderSample = this.borderTex.context({ getUV: () => screenUV });
     p = mix(p, borderSample, borderSample.a);
 
+    // Mini scene overlay in corner
+    const msScale = this.uniforms.miniScene_scale;
+    const msPosX = this.uniforms.miniScene_posX;
+    const msPosY = this.uniforms.miniScene_posY;
+    const msOpacity = this.uniforms.miniScene_opacity;
+    // Remap UVs to sample the mini scene texture within its corner rect
+    // Correct X by aspect ratio so the overlay is square
+    // posX/posY define the center of the overlay
+    const msAspect = this.miniScene_aspect;
+    const msScaleX = msScale.div(msAspect);
+    const msUV = vec2(
+      screenUV.x.sub(msPosX).add(msScaleX.mul(0.5)).div(msScaleX),
+      screenUV.y.sub(msPosY).add(msScale.mul(0.5)).div(msScale),
+    );
+    // Mask: 1 inside the rect, 0 outside
+    const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));
+    const inY = step(float(0), msUV.y).mul(step(msUV.y, float(1)));
+    const msMask = inX.mul(inY).mul(msOpacity);
+    const msSample = this.miniSceneTex.context({ getUV: () => msUV });
+    p = mix(p, msSample, msMask.mul(msSample.a));
+
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
 
     p = p.add(this.bloomPass);
@@ -134,6 +166,17 @@ export default class Post {
         opacity: params.border_opacity,
         padding: params.border_padding,
         borderWidth: params.border_width,
+      },
+    });
+
+    this.miniScene_aspect.value = scene.camera.aspect || 16 / 9;
+
+    this.miniScene.update({
+      renderer: this.renderer,
+      deltaFrame,
+      params: {
+        spinSpeed: params.miniScene_spinSpeed,
+        cubeColor: params.miniScene_cubeColor,
       },
     });
 
