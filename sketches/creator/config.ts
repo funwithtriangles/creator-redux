@@ -54,6 +54,12 @@ export const uniformsParamsConfig = [
     groupTitle: "Stripes",
     params: [
       {
+        key: "stripeBias",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
         key: "stripeFreq",
         defaultValue: 100,
         sliderMin: 10,

@@ -22,7 +22,7 @@ import matcapUrl from "./matcap.jpg";
 
 import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
-import { caustics } from "./caustics";
+// import { caustics } from "./caustics";
 import { float, uniform } from "three/tsl";
 import { stripes } from "./stripes";
 
@@ -55,8 +55,8 @@ export default class Creator {
 
   constructor() {
     const wavesNode = stripes({ ...this.uniforms })();
-    const objectMaterial = new MeshBasicMaterial({
-      color: 0x000000,
+    const objectMaterial = new MeshBasicNodeMaterial({
+      color: 0xffffff,
       // flatShading: true,
       // specular: 0xffffff,
       // map: matcapMat.matcap,
@@ -83,7 +83,7 @@ export default class Creator {
 
     // objectMaterial.iridescenceIORNode = this.uniforms.iridescenceIOR;
 
-    // this.root.add(light1);
+    this.root.add(light1);
     // this.root.add(light2);
 
     gltfLoader.load(glbUrl, (obj) => {

@@ -50,6 +50,7 @@ interface WavesUniforms {
   shinePower: ShaderNodeObject<UniformNode<number>>;
   frostedEdgeIntensity: ShaderNodeObject<UniformNode<number>>;
   rimPower: ShaderNodeObject<UniformNode<number>>;
+  stripeBias: ShaderNodeObject<UniformNode<number>>;
 }
 
 export const stripes = ({
@@ -76,6 +77,7 @@ export const stripes = ({
   shinePower,
   frostedEdgeIntensity,
   rimPower,
+  stripeBias,
 }: WavesUniforms) =>
   Fn(() => {
     const warpNoise = mx_noise_float(
@@ -105,9 +107,9 @@ export const stripes = ({
     const phaseB = phaseBOffset.add(offsetNoise.mul(phaseBNoiseMult));
 
     // Sine for each channel with phase offset
-    const r = sin(stripies.add(phaseR.mul(Math.PI * 2)));
-    const g = sin(stripies.add(phaseG.mul(Math.PI * 2)));
-    const b = sin(stripies.add(phaseB.mul(Math.PI * 2)));
+    const r = sin(stripies.add(phaseR.mul(Math.PI * 2))).add(stripeBias);
+    const g = sin(stripies.add(phaseG.mul(Math.PI * 2))).add(stripeBias);
+    const b = sin(stripies.add(phaseB.mul(Math.PI * 2))).add(stripeBias);
 
     const stripeColor = vec3(r, g, b);
 

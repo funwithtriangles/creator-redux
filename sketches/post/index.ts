@@ -15,9 +15,11 @@ import {
   gradientMapParamsConfig,
   HSLParamsConfig,
   logoParamsConfig,
+  noiseParamsConfig,
   waterParamsConfig,
 } from "./config";
 import { hsl } from "./effects/hsl";
+import { noise } from "./effects/noise";
 import { water } from "./effects/water";
 import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
@@ -30,6 +32,7 @@ const uniformsParamsConfig = [
   ...waterParamsConfig,
   ...gradientMapParamsConfig,
   ...logoParamsConfig,
+  ...noiseParamsConfig,
 ];
 
 export default class Post {
@@ -87,6 +90,8 @@ export default class Post {
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
 
     p = p.add(this.bloomPass);
+
+    p = noise(p, this.uniforms.noise_intensity, this.uniforms.noise_speed);
 
     return p;
   }

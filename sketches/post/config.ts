@@ -213,6 +213,23 @@ export const bloomParamsConfig = [
   },
 ];
 
+export const noiseParamsConfig = [
+  {
+    key: "noise_intensity",
+    title: "Intensity",
+    defaultValue: 0.1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "noise_speed",
+    title: "Speed",
+    defaultValue: 10,
+    sliderMin: 0,
+    sliderMax: 100,
+  },
+];
+
 export default {
   title: "Post",
   description: "Post-processing effects",
@@ -240,6 +257,10 @@ export default {
     {
       groupTitle: "Bloom",
       params: bloomParamsConfig,
+    },
+    {
+      groupTitle: "Noise",
+      params: noiseParamsConfig,
     },
   ],
 };
