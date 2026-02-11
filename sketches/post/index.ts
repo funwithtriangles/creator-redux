@@ -17,6 +17,7 @@ import {
   logoParamsConfig,
   noiseParamsConfig,
   waterParamsConfig,
+  borderParamsConfig,
 } from "./config";
 import { hsl } from "./effects/hsl";
 import { noise } from "./effects/noise";
@@ -25,6 +26,7 @@ import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
 import { bloom } from "./effects/bloom";
 import Logo from "./effects/logo";
+import { Border } from "./effects/border";
 
 const uniformsParamsConfig = [
   ...bloomParamsConfig,
@@ -33,6 +35,7 @@ const uniformsParamsConfig = [
   ...gradientMapParamsConfig,
   ...logoParamsConfig,
   ...noiseParamsConfig,
+  ...borderParamsConfig,
 ];
 
 export default class Post {
@@ -40,10 +43,12 @@ export default class Post {
   water_waveTime = uniform(0);
 
   logo = new Logo();
+  border = new Border();
 
   constructor(props) {
     this.shoutout = new Shoutout(props);
     this.shoutoutTex = texture(this.shoutout.texture);
+    this.borderTex = texture(this.border.texture);
     // window._xray_mask = this.shoutoutTex.context({ getUV: () => screenUV }).r;
   }
 
@@ -87,6 +92,11 @@ export default class Post {
         this.water_waveTime,
       ),
     );
+
+    // Border overlay
+    const borderSample = this.borderTex.context({ getUV: () => screenUV });
+    p = mix(p, borderSample, borderSample.a);
+
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
 
     p = p.add(this.bloomPass);
@@ -117,6 +127,15 @@ export default class Post {
     });
 
     this.logo.update({ scene, params: { scale: params.logo_scale } });
+
+    this.border.update({
+      params: {
+        color: params.border_color,
+        opacity: params.border_opacity,
+        padding: params.border_padding,
+        borderWidth: params.border_width,
+      },
+    });
 
     updateUniforms(uniformsParamsConfig, this.uniforms, params);
 

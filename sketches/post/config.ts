@@ -230,6 +230,36 @@ export const noiseParamsConfig = [
   },
 ];
 
+export const borderParamsConfig = [
+  {
+    key: "border_color",
+    title: "Color",
+    valueType: "rgb",
+    defaultValue: [1, 1, 1],
+  },
+  {
+    key: "border_opacity",
+    title: "Opacity",
+    defaultValue: 1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_padding",
+    title: "Padding",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 0.2,
+  },
+  {
+    key: "border_width",
+    title: "Width",
+    defaultValue: 2,
+    sliderMin: 1,
+    sliderMax: 10,
+  },
+];
+
 export default {
   title: "Post",
   description: "Post-processing effects",
@@ -261,6 +291,10 @@ export default {
     {
       groupTitle: "Noise",
       params: noiseParamsConfig,
+    },
+    {
+      groupTitle: "Border",
+      params: borderParamsConfig,
     },
   ],
 };
