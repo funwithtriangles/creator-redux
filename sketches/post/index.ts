@@ -62,6 +62,7 @@ export default class Post {
     this.shoutoutTex = texture(this.shoutout.texture);
     this.borderTex = texture(this.border.texture);
     this.miniSceneTex = texture(this.miniScene.texture);
+
     // window._xray_mask = this.shoutoutTex.context({ getUV: () => screenUV }).r;
   }
 
@@ -170,6 +171,8 @@ export default class Post {
         opacity: params.border_opacity,
         padding: params.border_padding,
         borderWidth: params.border_width,
+        canvasWidth: this.renderer.domElement.width,
+        canvasHeight: this.renderer.domElement.height,
       },
     });
 

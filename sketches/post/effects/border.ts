@@ -23,14 +23,28 @@ export class Border {
       opacity: number;
       padding: number;
       borderWidth: number;
+      canvasWidth: number;
+      canvasHeight: number;
     };
   }) {
+    if (
+      this.canvas.width !== p.canvasWidth ||
+      this.canvas.height !== p.canvasHeight
+    ) {
+      // Update the canvas size when screen size changes
+      this.canvas.width = p.canvasWidth;
+      this.canvas.height = p.canvasHeight;
+
+      // Must dispose the old texture to force a new texture to be created with the new canvas size
+      this.texture.dispose();
+    }
+
     const { width, height } = this.canvas;
     const ctx = this.context;
 
     ctx.clearRect(0, 0, width, height);
 
-    const pad = p.padding * Math.min(width, height);
+    const pad = p.padding * Math.max(width, height);
     const bw = p.borderWidth;
 
     ctx.strokeStyle = `rgba(${p.color.map((c) => Math.round(c * 255)).join(", ")}, ${p.opacity})`;
