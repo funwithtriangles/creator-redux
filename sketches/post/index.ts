@@ -57,6 +57,7 @@ export default class Post {
 
   constructor({ renderer }: { renderer: WebGPURenderer }) {
     this.renderer = renderer;
+
     this.shoutout = new Shoutout();
     this.shoutoutTex = texture(this.shoutout.texture);
     this.borderTex = texture(this.border.texture);
@@ -116,12 +117,14 @@ export default class Post {
     const msOpacity = this.uniforms.miniScene_opacity;
     // Remap UVs to sample the mini scene texture within its corner rect
     // Correct X by aspect ratio so the overlay is square
-    // posX/posY define the center of the overlay
+    // posX/posY are offsets from the bottom-right corner
     const msAspect = this.miniScene_aspect;
     const msScaleX = msScale.div(msAspect);
+    const msCenterX = float(1).sub(msPosX).sub(msScaleX.mul(0.5));
+    const msCenterY = float(1).sub(msPosY).sub(msScale.mul(0.5));
     const msUV = vec2(
-      screenUV.x.sub(msPosX).add(msScaleX.mul(0.5)).div(msScaleX),
-      screenUV.y.sub(msPosY).add(msScale.mul(0.5)).div(msScale),
+      screenUV.x.sub(msCenterX).add(msScaleX.mul(0.5)).div(msScaleX),
+      screenUV.y.sub(msCenterY).add(msScale.mul(0.5)).div(msScale),
     );
     // Mask: 1 inside the rect, 0 outside
     const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));

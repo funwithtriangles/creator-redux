@@ -277,17 +277,17 @@ export const miniSceneParamsConfig = [
   },
   {
     key: "miniScene_posX",
-    title: "Position X",
-    defaultValue: 0.75,
+    title: "Offset X",
+    defaultValue: 0.02,
     sliderMin: 0,
-    sliderMax: 1,
+    sliderMax: 0.5,
   },
   {
     key: "miniScene_posY",
-    title: "Position Y",
-    defaultValue: 0.75,
+    title: "Offset Y",
+    defaultValue: 0.02,
     sliderMin: 0,
-    sliderMax: 1,
+    sliderMax: 0.5,
   },
   {
     key: "miniScene_spinSpeed",
