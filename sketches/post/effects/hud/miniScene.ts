@@ -8,6 +8,8 @@ import {
   LinearFilter,
   MeshBasicMaterial,
   Group,
+  Box3,
+  Vector3,
 } from "three/webgpu";
 import glbUrl from "../../../creator/creator.glb";
 
@@ -55,7 +57,33 @@ export class MiniScene {
         }
       });
 
+      // Compute bounding boxes and cube-root volumes
+      const sizes: Vector3[] = [];
+      const volumes: number[] = [];
       this.parts.forEach((mesh) => {
+        mesh.geometry.computeBoundingBox();
+        const size = new Vector3();
+        mesh.geometry.boundingBox!.getSize(size);
+        sizes.push(size);
+        volumes.push(Math.cbrt(size.x * size.y * size.z));
+      });
+
+      // Use the average cube-root volume as the reference size
+      const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
+
+      this.parts.forEach((mesh, i) => {
+        const scale = avgVolume / volumes[i];
+        mesh.scale.setScalar(scale);
+
+        // Center the mesh based on its scaled bounding box
+        const center = new Vector3();
+        mesh.geometry.boundingBox!.getCenter(center);
+        mesh.position.set(
+          -center.x * scale,
+          -center.y * scale,
+          -center.z * scale,
+        );
+
         this.group.add(mesh);
         mesh.material = this.material;
         mesh.visible = false;
@@ -114,6 +142,7 @@ export class MiniScene {
 
     this.time += deltaFrame * p.spinSpeed * 0.02;
     this.group.rotation.y = this.time;
+    this.group.rotation.x = this.time * 0.5;
 
     this.material.color.setRGB(p.cubeColor[0], p.cubeColor[1], p.cubeColor[2]);
 
