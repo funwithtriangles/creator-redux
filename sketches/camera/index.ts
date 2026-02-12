@@ -80,8 +80,9 @@ export default class Camera {
     }
 
     this.camera.fov = p.fov;
-    this.camera.updateProjectionMatrix();
     this.camera.zoom = p.zoom;
+    this.camera.filmOffset = p.filmOffset;
+    this.camera.updateProjectionMatrix();
 
     if (this.currentMode === "orbit") {
       let rot;
@@ -103,7 +104,7 @@ export default class Camera {
           this.orbitDelta = lerp(
             this.latchDelta,
             target,
-            easeOutCubic(this.lerpDelta)
+            easeOutCubic(this.lerpDelta),
           );
         } else {
           this.orbitDelta = target % TAU;

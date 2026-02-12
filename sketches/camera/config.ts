@@ -56,6 +56,12 @@ export default {
       sliderMax: 5,
     },
     {
+      key: "filmOffset",
+      defaultValue: 20,
+      sliderMin: -100,
+      sliderMax: 100,
+    },
+    {
       key: "mode",
       title: "Camera Mode",
       valueType: "enum",
