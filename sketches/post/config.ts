@@ -296,12 +296,6 @@ export const miniSceneParamsConfig = [
     sliderMin: 0,
     sliderMax: 5,
   },
-  {
-    key: "miniScene_cubeColor",
-    title: "Cube Color",
-    valueType: "rgb",
-    defaultValue: [1, 1, 1],
-  },
 ];
 
 export default {
@@ -349,6 +343,10 @@ export default {
     {
       title: "Next Part",
       key: "nextPart",
+    },
+    {
+      title: "Random Part",
+      key: "randomPart",
     },
   ],
 };

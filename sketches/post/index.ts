@@ -110,7 +110,10 @@ export default class Post {
 
   nextPart() {
     this.hud.nextPart();
-    console.log("hi");
+  }
+
+  randomPart() {
+    this.hud.randomPart();
   }
 
   update({ params, deltaFrame, scene }) {

@@ -47,11 +47,8 @@ export class MiniScene {
     this.camera.lookAt(0, 0, 0);
 
     gltfLoader.load(glbUrl, (gltf) => {
-      console.log(gltf);
-
       gltf.scene.traverse((child) => {
         if (child instanceof Mesh && !child.isScene) {
-          console.log(child);
           child.position.set(0, 0, 0);
           this.parts.push(child);
         }
@@ -143,8 +140,6 @@ export class MiniScene {
     this.time += deltaFrame * p.spinSpeed * 0.02;
     this.group.rotation.y = this.time;
     this.group.rotation.x = this.time * 0.5;
-
-    this.material.color.setRGB(p.cubeColor[0], p.cubeColor[1], p.cubeColor[2]);
 
     // Render mini scene to render target
     const currentTarget = renderer.getRenderTarget();

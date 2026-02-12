@@ -95,6 +95,10 @@ export class Hud {
     });
   }
 
+  randomPart() {
+    this.miniScene.showRandomPart();
+  }
+
   nextPart() {
     this.miniScene.showNextPart();
   }
