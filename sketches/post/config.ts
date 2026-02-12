@@ -303,6 +303,19 @@ export const miniSceneParamsConfig = [
     sliderMin: 0,
     sliderMax: 3,
   },
+  {
+    key: "miniScene_pixelation",
+    title: "Pixelation",
+    defaultValue: 512,
+    sliderMin: 4,
+    sliderMax: 512,
+  },
+  {
+    key: "hud_color",
+    title: "HUD Color",
+    valueType: "rgb",
+    defaultValue: [1, 1, 1],
+  },
 ];
 
 export default {

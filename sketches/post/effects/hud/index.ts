@@ -1,5 +1,6 @@
 import { Node, WebGPURenderer } from "three/webgpu";
 import {
+  floor,
   mix,
   screenUV,
   texture,
@@ -31,8 +32,16 @@ export class Hud {
   ): ShaderNodeObject<Node> {
     let p = input;
 
+    // Pixelate HUD UVs
+    // const hudPixelation = uniforms.miniScene_pixelation;
+    // const pixelatedScreenUV = floor(screenUV.mul(hudPixelation)).div(
+    //   hudPixelation,
+    // );
+
     // Border overlay
-    const borderSample = this.borderTex.context({ getUV: () => screenUV });
+    const borderSample = this.borderTex.context({
+      getUV: () => screenUV,
+    });
     p = mix(p, borderSample, borderSample.a);
 
     // Mini scene overlay in corner
@@ -55,8 +64,15 @@ export class Hud {
     const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));
     const inY = step(float(0), msUV.y).mul(step(msUV.y, float(1)));
     const msMask = inX.mul(inY).mul(msOpacity);
-    const msSample = this.miniSceneTex.context({ getUV: () => msUV });
+    // Pixelate the mini scene UVs
+    const msPixelation = uniforms.miniScene_pixelation;
+    const msPixelatedUV = floor(msUV.mul(msPixelation)).div(msPixelation);
+    const msSample = this.miniSceneTex.context({ getUV: () => msPixelatedUV });
     p = mix(p, msSample, msMask.mul(msSample.a));
+
+    // Tint entire HUD with color
+    const hudColor = uniforms.hud_color;
+    p = mix(input, p.mul(hudColor), step(float(0.001), p.sub(input).length()));
 
     return p;
   }
