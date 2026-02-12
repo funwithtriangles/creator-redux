@@ -1,16 +1,10 @@
 import { Node, WebGPURenderer } from "three/webgpu";
 import {
-  color,
-  luminance,
   mix,
-  sample,
   screenUV,
   texture,
   uniform,
-  vec2,
-  step,
   float,
-  clamp,
   type ShaderNodeObject,
 } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
@@ -31,8 +25,7 @@ import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
 import { bloom } from "./effects/bloom";
 import Logo from "./effects/logo";
-import { Border } from "./effects/border";
-import { MiniScene } from "./effects/miniScene";
+import { Hud } from "./effects/hud";
 
 const uniformsParamsConfig = [
   ...bloomParamsConfig,
@@ -51,17 +44,13 @@ export default class Post {
   renderer: WebGPURenderer;
 
   logo = new Logo();
-  border = new Border();
-  miniScene = new MiniScene();
-  miniScene_aspect = uniform(16 / 9);
+  hud = new Hud();
 
   constructor({ renderer }: { renderer: WebGPURenderer }) {
     this.renderer = renderer;
 
     this.shoutout = new Shoutout();
     this.shoutoutTex = texture(this.shoutout.texture);
-    this.borderTex = texture(this.border.texture);
-    this.miniSceneTex = texture(this.miniScene.texture);
 
     // window._xray_mask = this.shoutoutTex.context({ getUV: () => screenUV }).r;
   }
@@ -107,32 +96,8 @@ export default class Post {
       ),
     );
 
-    // Border overlay
-    const borderSample = this.borderTex.context({ getUV: () => screenUV });
-    p = mix(p, borderSample, borderSample.a);
-
-    // Mini scene overlay in corner
-    const msScale = this.uniforms.miniScene_scale;
-    const msPosX = this.uniforms.miniScene_posX;
-    const msPosY = this.uniforms.miniScene_posY;
-    const msOpacity = this.uniforms.miniScene_opacity;
-    // Remap UVs to sample the mini scene texture within its corner rect
-    // Correct X by aspect ratio so the overlay is square
-    // posX/posY are offsets from the bottom-right corner
-    const msAspect = this.miniScene_aspect;
-    const msScaleX = msScale.div(msAspect);
-    const msCenterX = float(1).sub(msPosX).sub(msScaleX.mul(0.5));
-    const msCenterY = float(1).sub(msPosY).sub(msScale.mul(0.5));
-    const msUV = vec2(
-      screenUV.x.sub(msCenterX).add(msScaleX.mul(0.5)).div(msScaleX),
-      screenUV.y.sub(msCenterY).add(msScale.mul(0.5)).div(msScale),
-    );
-    // Mask: 1 inside the rect, 0 outside
-    const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));
-    const inY = step(float(0), msUV.y).mul(step(msUV.y, float(1)));
-    const msMask = inX.mul(inY).mul(msOpacity);
-    const msSample = this.miniSceneTex.context({ getUV: () => msUV });
-    p = mix(p, msSample, msMask.mul(msSample.a));
+    // HUD overlay (border + mini scene)
+    p = this.hud.getNode(p, this.uniforms);
 
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
 
@@ -165,26 +130,11 @@ export default class Post {
 
     this.logo.update({ scene, params: { scale: params.logo_scale } });
 
-    this.border.update({
-      params: {
-        color: params.border_color,
-        opacity: params.border_opacity,
-        padding: params.border_padding,
-        borderWidth: params.border_width,
-        canvasWidth: this.renderer.domElement.width,
-        canvasHeight: this.renderer.domElement.height,
-      },
-    });
-
-    this.miniScene_aspect.value = scene.camera.aspect || 16 / 9;
-
-    this.miniScene.update({
+    this.hud.update({
       renderer: this.renderer,
       deltaFrame,
-      params: {
-        spinSpeed: params.miniScene_spinSpeed,
-        cubeColor: params.miniScene_cubeColor,
-      },
+      params,
+      camera: scene.camera,
     });
 
     updateUniforms(uniformsParamsConfig, this.uniforms, params);
