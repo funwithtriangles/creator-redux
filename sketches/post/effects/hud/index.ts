@@ -64,11 +64,16 @@ export class Hud {
     const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));
     const inY = step(float(0), msUV.y).mul(step(msUV.y, float(1)));
     const msMask = inX.mul(inY).mul(msOpacity);
+    // Slitscan wipe: clamp Y so rows above the frontier sample from the frontier
+    const msWipe = uniforms.miniScene_wipe;
+    const wipeY = msUV.y.min(msWipe);
+    const msWipedUV = vec2(msUV.x, wipeY);
     // Pixelate the mini scene UVs
     const msPixelation = uniforms.miniScene_pixelation;
-    const msPixelatedUV = floor(msUV.mul(msPixelation)).div(msPixelation);
+    const msPixelatedUV = floor(msWipedUV.mul(msPixelation)).div(msPixelation);
     const msSample = this.miniSceneTex.context({ getUV: () => msPixelatedUV });
-    p = mix(p, msSample, msMask.mul(msSample.a));
+    const wipeMask = step(float(0.001), msWipe);
+    p = mix(p, msSample, msMask.mul(msSample.a).mul(wipeMask));
 
     // Tint entire HUD with color
     const hudColor = uniforms.hud_color;

@@ -339,6 +339,13 @@ export const miniSceneParamsConfig = [
     sliderMax: 512,
   },
   {
+    key: "miniScene_wipe",
+    title: "Wipe",
+    defaultValue: 1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
     key: "hud_color",
     title: "HUD Color",
     valueType: "rgb",
