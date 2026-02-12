@@ -38,6 +38,7 @@ export class MiniScene {
 
   material = new MeshBasicNodeMaterial({
     transparent: true,
+    side: 2, // DoubleSide
     colorNode: wireframeEmissiveColor({
       wireframeFrontColor: this.wireframeFrontColor,
       wireframeBackColor: this.wireframeBackColor,
