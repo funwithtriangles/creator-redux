@@ -20,7 +20,8 @@ export class MiniScene {
   group: Group;
   camera: OrthographicCamera;
   renderTarget: RenderTarget;
-  parts: Mesh[] = [];
+  parts: Group[] = [];
+  meshes: Mesh[] = [];
   time = 0;
   currentPartIndex = 0;
 
@@ -49,44 +50,51 @@ export class MiniScene {
     gltfLoader.load(glbUrl, (gltf) => {
       gltf.scene.traverse((child) => {
         if (child instanceof Mesh && !child.isScene) {
-          child.position.set(0, 0, 0);
-          this.parts.push(child);
+          this.meshes.push(child);
         }
       });
 
-      // Compute bounding boxes and cube-root volumes
-      const sizes: Vector3[] = [];
+      gltf.scene.children.forEach((child) => {
+        if (child.name === "rest") return;
+        this.parts.push(child);
+      });
+
+      this.parts.forEach((part) => {
+        this.group.add(part);
+        part.position.set(0, 0, 0);
+        part.visible = false;
+      });
+
+      this.meshes.forEach((mesh) => {
+        mesh.material = this.material;
+      });
+
+      // Compute bounding box volume for each group using Box3
+      const box = new Box3();
+      const size = new Vector3();
       const volumes: number[] = [];
-      this.parts.forEach((mesh) => {
-        mesh.geometry.computeBoundingBox();
-        const size = new Vector3();
-        mesh.geometry.boundingBox!.getSize(size);
-        sizes.push(size);
+
+      this.parts.forEach((part) => {
+        box.setFromObject(part);
+        box.getSize(size);
         volumes.push(Math.cbrt(size.x * size.y * size.z));
       });
 
       // Use the average cube-root volume as the reference size
       const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
 
-      this.parts.forEach((mesh, i) => {
+      this.parts.forEach((part, i) => {
         const scale = avgVolume / volumes[i];
-        mesh.scale.setScalar(scale);
+        part.scale.setScalar(scale);
 
-        // Center the mesh based on its scaled bounding box
+        // Center the group based on its scaled bounding box
+        box.setFromObject(part);
         const center = new Vector3();
-        mesh.geometry.boundingBox!.getCenter(center);
-        mesh.position.set(
-          -center.x * scale,
-          -center.y * scale,
-          -center.z * scale,
-        );
-
-        this.group.add(mesh);
-        mesh.material = this.material;
-        mesh.visible = false;
+        box.getCenter(center);
+        part.position.sub(center);
       });
 
-      this.showPart(0);
+      this.showPart(1);
     });
 
     this.renderTarget = new RenderTarget(512, 512, {
@@ -110,9 +118,12 @@ export class MiniScene {
   }
 
   showRandomPart() {
-    if (this.parts.length === 0) return;
+    if (this.parts.length <= 1) return;
 
-    const randomIndex = Math.floor(Math.random() * this.parts.length);
+    let randomIndex: number;
+    do {
+      randomIndex = Math.floor(Math.random() * this.parts.length);
+    } while (randomIndex === this.currentPartIndex);
     this.showPart(randomIndex);
   }
 
@@ -139,7 +150,7 @@ export class MiniScene {
 
     this.time += deltaFrame * p.spinSpeed * 0.02;
     this.group.rotation.y = this.time;
-    this.group.rotation.x = this.time * 0.5;
+    // this.group.rotation.x = this.time * 0.5;
 
     // Render mini scene to render target
     const currentTarget = renderer.getRenderTarget();
