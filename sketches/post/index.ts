@@ -1,4 +1,4 @@
-import { Node } from "three/webgpu";
+import { Node, WebGPURenderer } from "three/webgpu";
 import {
   color,
   luminance,
@@ -48,15 +48,16 @@ const uniformsParamsConfig = [
 export default class Post {
   uniforms = convertParamsToUniforms(uniformsParamsConfig);
   water_waveTime = uniform(0);
+  renderer: WebGPURenderer;
 
   logo = new Logo();
   border = new Border();
   miniScene = new MiniScene();
   miniScene_aspect = uniform(16 / 9);
 
-  constructor(props) {
-    this.renderer = props.renderer;
-    this.shoutout = new Shoutout(props);
+  constructor({ renderer }: { renderer: WebGPURenderer }) {
+    this.renderer = renderer;
+    this.shoutout = new Shoutout();
     this.shoutoutTex = texture(this.shoutout.texture);
     this.borderTex = texture(this.border.texture);
     this.miniSceneTex = texture(this.miniScene.texture);
