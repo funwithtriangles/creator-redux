@@ -22,6 +22,10 @@ export class Border {
       color: [number, number, number];
       opacity: number;
       padding: number;
+      topOffset: number;
+      rightOffset: number;
+      bottomOffset: number;
+      leftOffset: number;
       borderWidth: number;
       canvasWidth: number;
       canvasHeight: number;
@@ -44,15 +48,27 @@ export class Border {
 
     ctx.clearRect(0, 0, width, height);
 
-    const pad = p.padding * Math.max(width, height);
+    const scale = Math.max(width, height);
+    const pad = p.padding * scale;
     const bw = p.borderWidth;
 
     ctx.strokeStyle = `rgba(${p.color.map((c) => Math.round(c * 255)).join(", ")}, ${p.opacity})`;
     ctx.lineWidth = bw;
 
-    // Draw the border rect inset by padding + half line width so stroke stays inside
-    const offset = pad + bw / 2;
-    ctx.strokeRect(offset, offset, width - offset * 2, height - offset * 2);
+    const top = pad + p.topOffset * scale + bw / 2;
+    const right = width - (pad + p.rightOffset * scale) - bw / 2;
+    const bottom = height - (pad + p.bottomOffset * scale) - bw / 2;
+    const left = pad + p.leftOffset * scale + bw / 2;
+
+    if (right > left && bottom > top) {
+      ctx.beginPath();
+      ctx.moveTo(left, top);
+      ctx.lineTo(right, top);
+      ctx.lineTo(right, bottom);
+      ctx.lineTo(left, bottom);
+      ctx.closePath();
+      ctx.stroke();
+    }
 
     this.texture.needsUpdate = true;
   }

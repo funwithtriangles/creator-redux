@@ -258,6 +258,34 @@ export const borderParamsConfig = [
     sliderMin: 1,
     sliderMax: 10,
   },
+  {
+    key: "border_topOffset",
+    title: "Top Offset",
+    defaultValue: 0,
+    sliderMin: -1,
+    sliderMax: 1,
+  },
+  {
+    key: "border_rightOffset",
+    title: "Right Offset",
+    defaultValue: 0,
+    sliderMin: -1,
+    sliderMax: 1,
+  },
+  {
+    key: "border_bottomOffset",
+    title: "Bottom Offset",
+    defaultValue: 0,
+    sliderMin: -1,
+    sliderMax: 1,
+  },
+  {
+    key: "border_leftOffset",
+    title: "Left Offset",
+    defaultValue: 0,
+    sliderMin: -1,
+    sliderMax: 1,
+  },
 ];
 
 export const miniSceneParamsConfig = [
