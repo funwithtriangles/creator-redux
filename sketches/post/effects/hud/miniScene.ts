@@ -6,12 +6,19 @@ import {
   RenderTarget,
   WebGPURenderer,
   LinearFilter,
-  MeshBasicMaterial,
+  MeshBasicNodeMaterial,
   Group,
   Box3,
   Vector3,
+  Color,
 } from "three/webgpu";
+import { uniform } from "three/tsl";
 import glbUrl from "../../../creator/creator.glb";
+import {
+  wireframeAlphaFloat,
+  wireframeEmissiveColor,
+  setupTriCenterAttributes,
+} from "./wireframe";
 
 const gltfLoader = new GLTFLoader();
 
@@ -25,9 +32,19 @@ export class MiniScene {
   time = 0;
   currentPartIndex = 0;
 
-  material = new MeshBasicMaterial({
-    color: 0xffffff,
-    wireframe: true,
+  wireframeFrontColor = uniform(new Color(0xffffff));
+  wireframeBackColor = uniform(new Color(0x888888));
+  wireframeThickness = uniform(1.5);
+
+  material = new MeshBasicNodeMaterial({
+    transparent: true,
+    colorNode: wireframeEmissiveColor({
+      wireframeFrontColor: this.wireframeFrontColor,
+      wireframeBackColor: this.wireframeBackColor,
+    }),
+    opacityNode: wireframeAlphaFloat({
+      thickness: this.wireframeThickness,
+    }),
   });
 
   constructor() {
@@ -66,6 +83,7 @@ export class MiniScene {
       });
 
       this.meshes.forEach((mesh) => {
+        mesh.geometry = setupTriCenterAttributes(mesh.geometry);
         mesh.material = this.material;
       });
 
@@ -144,10 +162,12 @@ export class MiniScene {
     params: {
       spinSpeed: number;
       cubeColor: [number, number, number];
+      wireframeThickness: number;
     };
   }) {
     if (this.parts.length === 0) return;
 
+    this.wireframeThickness.value = p.wireframeThickness;
     this.time += deltaFrame * p.spinSpeed * 0.02;
     this.group.rotation.y = this.time;
     // this.group.rotation.x = this.time * 0.5;

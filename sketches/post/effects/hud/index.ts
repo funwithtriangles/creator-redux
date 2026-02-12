@@ -91,6 +91,7 @@ export class Hud {
       params: {
         spinSpeed: params.miniScene_spinSpeed,
         cubeColor: params.miniScene_cubeColor,
+        wireframeThickness: params.miniScene_wireframeThickness,
       },
     });
   }

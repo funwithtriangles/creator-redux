@@ -296,6 +296,13 @@ export const miniSceneParamsConfig = [
     sliderMin: 0,
     sliderMax: 5,
   },
+  {
+    key: "miniScene_wireframeThickness",
+    title: "Wireframe Thickness",
+    defaultValue: 1.5,
+    sliderMin: 0,
+    sliderMax: 3,
+  },
 ];
 
 export default {
