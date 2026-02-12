@@ -345,4 +345,10 @@ export default {
       params: miniSceneParamsConfig,
     },
   ],
+  shots: [
+    {
+      title: "Next Part",
+      key: "nextPart",
+    },
+  ],
 };

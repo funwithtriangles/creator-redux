@@ -94,4 +94,8 @@ export class Hud {
       },
     });
   }
+
+  nextPart() {
+    this.miniScene.showNextPart();
+  }
 }

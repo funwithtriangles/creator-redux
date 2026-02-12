@@ -108,6 +108,11 @@ export default class Post {
     return p;
   }
 
+  nextPart() {
+    this.hud.nextPart();
+    console.log("hi");
+  }
+
   update({ params, deltaFrame, scene }) {
     this.water_waveTime.value += params.water_speed * deltaFrame;
 

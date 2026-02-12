@@ -1,28 +1,37 @@
+import { GLTFLoader } from "three-stdlib";
 import {
   Scene,
   OrthographicCamera,
   Mesh,
-  BoxGeometry,
   RenderTarget,
-  MeshBasicNodeMaterial,
   WebGPURenderer,
   LinearFilter,
-  MeshStandardMaterial,
   MeshBasicMaterial,
+  Group,
 } from "three/webgpu";
+import glbUrl from "../../../creator/creator.glb";
+
+const gltfLoader = new GLTFLoader();
 
 export class MiniScene {
   scene: Scene;
+  group: Group;
   camera: OrthographicCamera;
-  cube: Mesh;
   renderTarget: RenderTarget;
+  parts: Mesh[] = [];
   time = 0;
+  currentPartIndex = 0;
+
+  material = new MeshBasicMaterial({
+    color: 0xffffff,
+    wireframe: true,
+  });
 
   constructor() {
-    // Mini scene
     this.scene = new Scene();
+    this.group = new Group();
+    this.scene.add(this.group);
 
-    // Orthographic camera
     const frustum = 2;
     this.camera = new OrthographicCamera(
       -frustum,
@@ -35,16 +44,26 @@ export class MiniScene {
     this.camera.position.set(0, 0, 5);
     this.camera.lookAt(0, 0, 0);
 
-    // Spinning cube
-    const geometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-    this.cube = new Mesh(geometry, material);
-    this.scene.add(this.cube);
+    gltfLoader.load(glbUrl, (gltf) => {
+      console.log(gltf);
 
-    // Render target (transparent background)
+      gltf.scene.traverse((child) => {
+        if (child instanceof Mesh && !child.isScene) {
+          console.log(child);
+          child.position.set(0, 0, 0);
+          this.parts.push(child);
+        }
+      });
+
+      this.parts.forEach((mesh) => {
+        this.group.add(mesh);
+        mesh.material = this.material;
+        mesh.visible = false;
+      });
+
+      this.showPart(0);
+    });
+
     this.renderTarget = new RenderTarget(512, 512, {
       minFilter: LinearFilter,
       magFilter: LinearFilter,
@@ -53,6 +72,30 @@ export class MiniScene {
 
   get texture() {
     return this.renderTarget.texture;
+  }
+
+  showPart(index: number) {
+    if (this.parts.length === 0) return;
+
+    this.parts.forEach((part, i) => {
+      part.visible = i === index;
+    });
+
+    this.currentPartIndex = index;
+  }
+
+  showRandomPart() {
+    if (this.parts.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * this.parts.length);
+    this.showPart(randomIndex);
+  }
+
+  showNextPart() {
+    if (this.parts.length === 0) return;
+
+    const nextIndex = (this.currentPartIndex + 1) % this.parts.length;
+    this.showPart(nextIndex);
   }
 
   update({
@@ -67,15 +110,12 @@ export class MiniScene {
       cubeColor: [number, number, number];
     };
   }) {
-    this.time += deltaFrame * p.spinSpeed * 0.02;
-    this.cube.rotation.x = this.time;
-    this.cube.rotation.y = this.time * 0.7;
+    if (this.parts.length === 0) return;
 
-    this.cube.material.color.setRGB(
-      p.cubeColor[0],
-      p.cubeColor[1],
-      p.cubeColor[2],
-    );
+    this.time += deltaFrame * p.spinSpeed * 0.02;
+    this.group.rotation.y = this.time;
+
+    this.material.color.setRGB(p.cubeColor[0], p.cubeColor[1], p.cubeColor[2]);
 
     // Render mini scene to render target
     const currentTarget = renderer.getRenderTarget();
@@ -88,6 +128,6 @@ export class MiniScene {
 
   dispose() {
     this.renderTarget.dispose();
-    this.cube.geometry.dispose();
+    this.material.dispose();
   }
 }
