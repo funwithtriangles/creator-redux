@@ -238,6 +238,12 @@ export const borderParamsConfig = [
     defaultValue: [1, 1, 1],
   },
   {
+    key: "border_text",
+    title: "Text",
+    valueType: "string",
+    defaultValue: "Hello, world!",
+  },
+  {
     key: "border_opacity",
     title: "Opacity",
     defaultValue: 1,

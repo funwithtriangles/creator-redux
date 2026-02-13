@@ -107,6 +107,7 @@ export class Hud {
         bevelTopRight: params.border_bevelTopRight,
         bevelBottomRight: params.border_bevelBottomRight,
         bevelBottomLeft: params.border_bevelBottomLeft,
+        text: params.border_text,
         canvasWidth: renderer.domElement.width,
         canvasHeight: renderer.domElement.height,
       },
