@@ -37,9 +37,12 @@ export class Border {
       bevelTopRight: number;
       bevelBottomRight: number;
       bevelBottomLeft: number;
-      text: string;
-      textX: number;
-      textY: number;
+      titleText: string;
+      titleTextX: number;
+      titleTextY: number;
+      partText: string;
+      partTextX: number;
+      partTextY: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -107,22 +110,64 @@ export class Border {
       ctx.stroke();
     }
 
-    if (p.text) {
-      const fontSize = Math.max(12, Math.round(scale * 0.02));
-      ctx.fillStyle = `rgba(${p.color.map((c) => Math.round(c * 255)).join(", ")}, ${p.opacity})`;
-      ctx.font = `${fontSize}px "Tiny5", monospace`;
-      ctx.textBaseline = "top";
-      const textX = p.textX * width;
-      const textY = p.textY * height;
-      const metrics = ctx.measureText(p.text);
-      const textW = metrics.width;
-      const textH =
-        metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-      const pad = Math.max(2, Math.round(bw));
-      ctx.clearRect(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
-      ctx.fillText(p.text, textX, textY);
+    if (p.titleText) {
+      this.drawText({
+        text: p.titleText,
+        x: p.titleTextX * width,
+        y: p.titleTextY * height,
+        fontSize: Math.max(12, Math.round(scale * 0.02)),
+        color: p.color,
+        opacity: p.opacity,
+        clearPadding: Math.max(2, Math.round(bw)),
+      });
+    }
+
+    if (p.partText) {
+      this.drawText({
+        text: p.partText,
+        x: p.partTextX * width,
+        y: p.partTextY * height,
+        fontSize: Math.max(10, Math.round(scale * 0.016)),
+        color: p.color,
+        opacity: p.opacity,
+        clearPadding: Math.max(2, Math.round(bw)),
+      });
     }
 
     this.texture.needsUpdate = true;
+  }
+
+  drawText({
+    text,
+    x,
+    y,
+    fontSize,
+    color,
+    opacity,
+    clearPadding,
+  }: {
+    text: string;
+    x: number;
+    y: number;
+    fontSize: number;
+    color: [number, number, number];
+    opacity: number;
+    clearPadding: number;
+  }) {
+    const ctx = this.context;
+    ctx.fillStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
+    ctx.font = `${fontSize}px "Tiny5", monospace`;
+    ctx.textBaseline = "top";
+    const metrics = ctx.measureText(text);
+    const textW = metrics.width;
+    const textH =
+      metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+    ctx.clearRect(
+      x - clearPadding,
+      y - clearPadding,
+      textW + clearPadding * 2,
+      textH + clearPadding * 2,
+    );
+    ctx.fillText(text, x, y);
   }
 }
