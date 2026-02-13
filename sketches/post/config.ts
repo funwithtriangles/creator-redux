@@ -244,6 +244,20 @@ export const borderParamsConfig = [
     defaultValue: "Hello, world!",
   },
   {
+    key: "border_textX",
+    title: "Text X",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_textY",
+    title: "Text Y",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
     key: "border_opacity",
     title: "Opacity",
     defaultValue: 1,

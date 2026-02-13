@@ -38,6 +38,8 @@ export class Border {
       bevelBottomRight: number;
       bevelBottomLeft: number;
       text: string;
+      textX: number;
+      textY: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -106,11 +108,19 @@ export class Border {
     }
 
     if (p.text) {
-      const fontSize = Math.max(12, Math.round(scale * 0.03));
+      const fontSize = Math.max(12, Math.round(scale * 0.02));
       ctx.fillStyle = `rgba(${p.color.map((c) => Math.round(c * 255)).join(", ")}, ${p.opacity})`;
       ctx.font = `${fontSize}px "Tiny5", monospace`;
       ctx.textBaseline = "top";
-      ctx.fillText(p.text, left + bevelTopLeft + bw * 2, top + bw * 2);
+      const textX = p.textX * width;
+      const textY = p.textY * height;
+      const metrics = ctx.measureText(p.text);
+      const textW = metrics.width;
+      const textH =
+        metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+      const pad = Math.max(2, Math.round(bw));
+      ctx.clearRect(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
+      ctx.fillText(p.text, textX, textY);
     }
 
     this.texture.needsUpdate = true;
