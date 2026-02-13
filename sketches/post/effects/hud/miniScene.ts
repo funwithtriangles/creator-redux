@@ -88,22 +88,23 @@ export class MiniScene {
         mesh.material = this.material;
       });
 
-      // Compute bounding box volume for each group using Box3
+      // Compute bounding box max(width,height) for each group using Box3
       const box = new Box3();
       const size = new Vector3();
-      const volumes: number[] = [];
+      const maxExtents: number[] = [];
 
       this.parts.forEach((part) => {
         box.setFromObject(part);
         box.getSize(size);
-        volumes.push(Math.cbrt(size.x * size.y * size.z));
+        maxExtents.push(Math.max(size.x, size.y, 0.0001));
       });
 
-      // Use the average cube-root volume as the reference size
-      const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
+      // Use the average max extent as the reference size
+      const avgExtent =
+        maxExtents.reduce((sum, extent) => sum + extent, 0) / maxExtents.length;
 
       this.parts.forEach((part, i) => {
-        const scale = avgVolume / volumes[i];
+        const scale = avgExtent / maxExtents[i];
         part.scale.setScalar(scale);
 
         // Center the group based on its scaled bounding box
