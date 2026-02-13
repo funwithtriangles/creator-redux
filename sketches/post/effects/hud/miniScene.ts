@@ -31,6 +31,7 @@ export class MiniScene {
   meshes: Mesh[] = [];
   time = 0;
   currentPartIndex = 0;
+  partName = "";
 
   wireframeFrontColor = uniform(new Color(0xffffff));
   wireframeBackColor = uniform(new Color(0x888888));
@@ -129,6 +130,9 @@ export class MiniScene {
 
   showPart(index: number) {
     if (this.parts.length === 0) return;
+
+    const part = this.parts[index];
+    this.partName = part?.name ? part.name.toUpperCase() : "";
 
     this.parts.forEach((part, i) => {
       part.visible = i === index;

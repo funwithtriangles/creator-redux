@@ -110,7 +110,7 @@ export class Hud {
         titleText: params.border_titleText,
         titleTextX: params.border_titleTextX,
         titleTextY: params.border_titleTextY,
-        partText: params.border_partText,
+        partText: this.miniScene.partName,
         partTextX: params.border_partTextX,
         partTextY: params.border_partTextY,
         canvasWidth: renderer.domElement.width,

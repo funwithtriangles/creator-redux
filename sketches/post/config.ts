@@ -258,12 +258,6 @@ export const borderParamsConfig = [
     sliderMax: 1,
   },
   {
-    key: "border_partText",
-    title: "Part Text",
-    valueType: "string",
-    defaultValue: "",
-  },
-  {
     key: "border_partTextX",
     title: "Part Text X",
     defaultValue: 0.05,
