@@ -34,14 +34,18 @@ export class Shoutout {
     params: {
       message: string;
       message1: string;
+      message2: string;
       color: [number, number, number];
       scrollSpeed: number;
       positionX: number;
       positionX1: number;
+      positionX2: number;
       positionY: number;
       positionY1: number;
+      positionY2: number;
       scale: number;
       scale1: number;
+      scale2: number;
       rotation: number;
       opacity: number;
     };
@@ -58,6 +62,8 @@ export class Shoutout {
     const baseY = p.positionY * this.canvas.height;
     const baseX1 = p.positionX1 * this.canvas.width;
     const baseY1 = p.positionY1 * this.canvas.height;
+    const baseX2 = p.positionX2 * this.canvas.width;
+    const baseY2 = p.positionY2 * this.canvas.height;
 
     // Save the current context state
     this.context.save();
@@ -67,7 +73,7 @@ export class Shoutout {
     this.context.rotate(p.rotation);
     this.context.translate(
       baseX - this.canvas.width / 2,
-      baseY - this.canvas.height / 2
+      baseY - this.canvas.height / 2,
     );
     this.context.scale(p.scale, p.scale);
 
@@ -83,8 +89,25 @@ export class Shoutout {
     this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
     this.context.rotate(p.rotation);
     this.context.translate(
+      baseX2 - this.canvas.width / 2,
+      baseY2 - this.canvas.height / 2,
+    );
+    this.context.scale(p.scale2, p.scale2);
+
+    // Draw the text with scrolling applied in the rotated coordinate space
+    this.context.fillText(p.message2, 0, 0);
+
+    this.context.restore();
+
+    // Save the current context state
+    this.context.save();
+
+    // Apply transformations: translate to screen center, rotate, then translate to position and scale
+    this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
+    this.context.rotate(p.rotation);
+    this.context.translate(
       baseX1 - this.canvas.width / 2,
-      baseY1 - this.canvas.height / 2
+      baseY1 - this.canvas.height / 2,
     );
     this.context.scale(p.scale1, p.scale1);
 

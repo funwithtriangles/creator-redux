@@ -130,9 +130,13 @@ export default class Post {
         rotation: params.shoutout_rotation,
         opacity: params.shoutout_opacity,
         message1: params.shoutout_message1,
+        message2: params.shoutout_message2,
         positionX1: params.shoutout_positionX1,
+        positionX2: params.shoutout_positionX2,
         positionY1: params.shoutout_positionY1,
+        positionY2: params.shoutout_positionY2,
         scale1: params.shoutout_scale1,
+        scale2: params.shoutout_scale2,
       },
     });
 

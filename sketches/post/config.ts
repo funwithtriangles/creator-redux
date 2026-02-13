@@ -53,6 +53,12 @@ export const shoutoutParamsConfig = [
     defaultValue: "Hello, world!",
   },
   {
+    key: "shoutout_message2",
+    title: "Message 3",
+    valueType: "string",
+    defaultValue: "Hello, world!",
+  },
+  {
     key: "shoutout_scrollSpeed",
     title: "Scroll Speed",
     defaultValue: 2,
@@ -80,6 +86,13 @@ export const shoutoutParamsConfig = [
     sliderMax: 1,
   },
   {
+    key: "shoutout_positionX2",
+    title: "Position X 3",
+    defaultValue: 0,
+    sliderMin: -1,
+    sliderMax: 1,
+  },
+  {
     key: "shoutout_positionY",
     title: "Position Y",
     defaultValue: 0,
@@ -94,6 +107,13 @@ export const shoutoutParamsConfig = [
     sliderMax: 0.5,
   },
   {
+    key: "shoutout_positionY2",
+    title: "Position Y 3",
+    defaultValue: 0,
+    sliderMin: -0.5,
+    sliderMax: 0.5,
+  },
+  {
     key: "shoutout_scale",
     title: "Scale",
     defaultValue: 1,
@@ -103,6 +123,13 @@ export const shoutoutParamsConfig = [
   {
     key: "shoutout_scale1",
     title: "Scale 2",
+    defaultValue: 1,
+    sliderMin: 0.1,
+    sliderMax: 3,
+  },
+  {
+    key: "shoutout_scale2",
+    title: "Scale 3",
     defaultValue: 1,
     sliderMin: 0.1,
     sliderMax: 3,
