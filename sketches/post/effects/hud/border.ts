@@ -27,6 +27,10 @@ export class Border {
       bottomOffset: number;
       leftOffset: number;
       borderWidth: number;
+      bevelTopLeft: number;
+      bevelTopRight: number;
+      bevelBottomRight: number;
+      bevelBottomLeft: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -59,13 +63,37 @@ export class Border {
     const right = width - (pad + p.rightOffset * scale) - bw / 2;
     const bottom = height - (pad + p.bottomOffset * scale) - bw / 2;
     const left = pad + p.leftOffset * scale + bw / 2;
+    const maxBevel = Math.max(
+      0,
+      Math.min((right - left) / 2, (bottom - top) / 2),
+    );
+    const bevelTopLeft = Math.min(
+      Math.max(0, p.bevelTopLeft * scale),
+      maxBevel,
+    );
+    const bevelTopRight = Math.min(
+      Math.max(0, p.bevelTopRight * scale),
+      maxBevel,
+    );
+    const bevelBottomRight = Math.min(
+      Math.max(0, p.bevelBottomRight * scale),
+      maxBevel,
+    );
+    const bevelBottomLeft = Math.min(
+      Math.max(0, p.bevelBottomLeft * scale),
+      maxBevel,
+    );
 
     if (right > left && bottom > top) {
       ctx.beginPath();
-      ctx.moveTo(left, top);
-      ctx.lineTo(right, top);
-      ctx.lineTo(right, bottom);
-      ctx.lineTo(left, bottom);
+      ctx.moveTo(left + bevelTopLeft, top);
+      ctx.lineTo(right - bevelTopRight, top);
+      ctx.lineTo(right, top + bevelTopRight);
+      ctx.lineTo(right, bottom - bevelBottomRight);
+      ctx.lineTo(right - bevelBottomRight, bottom);
+      ctx.lineTo(left + bevelBottomLeft, bottom);
+      ctx.lineTo(left, bottom - bevelBottomLeft);
+      ctx.lineTo(left, top + bevelTopLeft);
       ctx.closePath();
       ctx.stroke();
     }

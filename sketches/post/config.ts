@@ -286,6 +286,34 @@ export const borderParamsConfig = [
     sliderMin: -1,
     sliderMax: 1,
   },
+  {
+    key: "border_bevelTopLeft",
+    title: "Bevel Top Left",
+    defaultValue: 0.03,
+    sliderMin: 0,
+    sliderMax: 0.2,
+  },
+  {
+    key: "border_bevelTopRight",
+    title: "Bevel Top Right",
+    defaultValue: 0.03,
+    sliderMin: 0,
+    sliderMax: 0.2,
+  },
+  {
+    key: "border_bevelBottomRight",
+    title: "Bevel Bottom Right",
+    defaultValue: 0.03,
+    sliderMin: 0,
+    sliderMax: 0.2,
+  },
+  {
+    key: "border_bevelBottomLeft",
+    title: "Bevel Bottom Left",
+    defaultValue: 0.03,
+    sliderMin: 0,
+    sliderMax: 0.2,
+  },
 ];
 
 export const miniSceneParamsConfig = [
