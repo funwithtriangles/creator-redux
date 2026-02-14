@@ -123,7 +123,7 @@ export class Border {
         fontSize: Math.max(12, Math.round(scale * 0.025)),
         color: p.color,
         opacity: p.opacity,
-        clearPadding: 5,
+        clearPadding: 10,
       });
     }
 
@@ -135,7 +135,7 @@ export class Border {
         fontSize: Math.max(10, Math.round(scale * 0.02)),
         color: p.color,
         opacity: p.opacity,
-        clearPadding: 5,
+        clearPadding: 10,
       });
     }
 
@@ -197,8 +197,8 @@ export class Border {
     ctx.textBaseline = "top";
     const metrics = ctx.measureText(text);
     const textW = metrics.width;
-    const textH =
-      metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+    const textH = fontSize;
+
     ctx.clearRect(
       x - clearPadding,
       y - clearPadding,
