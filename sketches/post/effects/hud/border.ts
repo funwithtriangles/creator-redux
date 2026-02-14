@@ -123,7 +123,7 @@ export class Border {
         fontSize: Math.max(12, Math.round(scale * 0.025)),
         color: p.color,
         opacity: p.opacity,
-        clearPadding: Math.max(2, Math.round(bw)),
+        clearPadding: 5,
       });
     }
 
@@ -135,7 +135,7 @@ export class Border {
         fontSize: Math.max(10, Math.round(scale * 0.02)),
         color: p.color,
         opacity: p.opacity,
-        clearPadding: Math.max(2, Math.round(bw)),
+        clearPadding: 5,
       });
     }
 

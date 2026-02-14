@@ -6,6 +6,7 @@ import {
   float,
   sin,
   vec2,
+  vec4,
   mul,
   add,
   div,
@@ -40,5 +41,10 @@ export const scanlines = (
     const edgeDistance = centeredUV.length();
     const vignetteMask = float(1).sub(edgeDistance.mul(vignette)).max(0);
 
-    return prevPass.mul(scanlineDarken).mul(flickerMask).mul(vignetteMask);
+    const rgb = prevPass.rgb
+      .mul(scanlineDarken)
+      .mul(flickerMask)
+      .mul(vignetteMask);
+
+    return vec4(rgb, prevPass.a);
   })();
