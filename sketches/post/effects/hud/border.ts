@@ -238,8 +238,6 @@ export class Border {
     const totalProb = squareProb + triangleProb + emptyProb;
 
     const normalizedSquareProb = totalProb > 0 ? squareProb / totalProb : 1 / 3;
-    const normalizedTriangleProb =
-      totalProb > 0 ? triangleProb / totalProb : 1 / 3;
     const normalizedEmptyProb = totalProb > 0 ? emptyProb / totalProb : 1 / 3;
 
     const nextGlyphTiles = Array.from({ length: 9 }, () => {
