@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import tiny5FontUrl from "@fontsource/tiny5/files/tiny5-latin-400-normal.woff2";
+import bitesizedFontUrl from "@fontsource/bytesized/files/bytesized-latin-400-normal.woff2";
 import { ensureFontInjected } from "./fontUtils";
 
 export class Border {
@@ -17,8 +18,8 @@ export class Border {
     this.texture = new THREE.CanvasTexture(this.canvas);
     this.texture.flipY = false;
     ensureFontInjected({
-      fontFamily: "Tiny5",
-      fontUrl: tiny5FontUrl,
+      fontFamily: "Bytesized",
+      fontUrl: bitesizedFontUrl,
     });
   }
 
@@ -119,7 +120,7 @@ export class Border {
         text: p.titleText,
         x: p.titleTextX * width,
         y: p.titleTextY * height,
-        fontSize: Math.max(12, Math.round(scale * 0.02)),
+        fontSize: Math.max(12, Math.round(scale * 0.025)),
         color: p.color,
         opacity: p.opacity,
         clearPadding: Math.max(2, Math.round(bw)),
@@ -131,14 +132,14 @@ export class Border {
         text: p.partText,
         x: p.partTextX * width,
         y: p.partTextY * height,
-        fontSize: Math.max(10, Math.round(scale * 0.016)),
+        fontSize: Math.max(10, Math.round(scale * 0.02)),
         color: p.color,
         opacity: p.opacity,
         clearPadding: Math.max(2, Math.round(bw)),
       });
     }
 
-    const trackerFontSize = Math.max(8, Math.round(scale * 0.012));
+    const trackerFontSize = Math.max(8, Math.round(scale * 0.015));
     const trackerLineHeight = Math.max(10, Math.round(trackerFontSize * 1.2));
     const trackerTop = p.trackerTextY * height;
 
@@ -192,7 +193,7 @@ export class Border {
   }) {
     const ctx = this.context;
     ctx.fillStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
-    ctx.font = `${fontSize}px "Tiny5", monospace`;
+    ctx.font = `${fontSize}px "Bytesized", monospace`;
     ctx.textBaseline = "top";
     const metrics = ctx.measureText(text);
     const textW = metrics.width;
