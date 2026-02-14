@@ -17,6 +17,7 @@ export class Border {
   glyphSquareProbability = 0.375;
   glyphTriangleProbability = 0.375;
   glyphEmptyProbability = 0.25;
+  miniWaveformSamples: number[] = [];
 
   constructor() {
     this.canvas = document.createElement("canvas");
@@ -67,6 +68,11 @@ export class Border {
       glyphSquareProbability: number;
       glyphTriangleProbability: number;
       glyphEmptyProbability: number;
+      miniWaveform_latestValue: number;
+      miniWaveform_posX: number;
+      miniWaveform_posY: number;
+      miniWaveform_width: number;
+      miniWaveform_height: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -220,6 +226,17 @@ export class Border {
       });
     });
 
+    this.drawMiniWaveform({
+      latestValue: p.miniWaveform_latestValue,
+      x: p.miniWaveform_posX * width,
+      y: p.miniWaveform_posY * height,
+      width: p.miniWaveform_width * width,
+      height: p.miniWaveform_height * height,
+      color: p.color,
+      opacity: p.opacity,
+      lineWidth: Math.max(1, bw * 0.5),
+    });
+
     this.texture.needsUpdate = true;
   }
 
@@ -335,6 +352,66 @@ export class Border {
       ctx.closePath();
       ctx.fill();
     }
+  }
+
+  drawMiniWaveform({
+    latestValue,
+    x,
+    y,
+    width,
+    height,
+    color,
+    opacity,
+    lineWidth,
+  }: {
+    latestValue: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    color: [number, number, number];
+    opacity: number;
+    lineWidth: number;
+  }) {
+    const w = Math.max(1, Math.round(width));
+    const h = Math.max(1, Math.round(height));
+    if (w <= 1 || h <= 1) {
+      this.miniWaveformSamples = [];
+      return;
+    }
+
+    const sampleCount = Math.max(2, w);
+    const clampedValue = Math.min(1, Math.max(0, latestValue));
+
+    this.miniWaveformSamples.push(clampedValue);
+    if (this.miniWaveformSamples.length > sampleCount) {
+      this.miniWaveformSamples = this.miniWaveformSamples.slice(-sampleCount);
+    }
+
+    const ctx = this.context;
+    ctx.strokeStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
+    ctx.lineWidth = lineWidth;
+
+    const pointCount = this.miniWaveformSamples.length;
+    if (pointCount < 2) {
+      return;
+    }
+
+    ctx.beginPath();
+
+    for (let i = 0; i < pointCount; i++) {
+      const sample = this.miniWaveformSamples[i];
+      const px = x + (i / (sampleCount - 1)) * w;
+      const py = y + (1 - sample) * h;
+
+      if (i === 0) {
+        ctx.moveTo(px, py);
+      } else {
+        ctx.lineTo(px, py);
+      }
+    }
+
+    ctx.stroke();
   }
 
   drawText({

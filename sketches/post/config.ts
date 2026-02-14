@@ -601,6 +601,44 @@ export const trackerParamsConfig = [
   },
 ];
 
+export const miniWaveformParamsConfig = [
+  {
+    key: "miniWaveform_latestValue",
+    title: "Latest Value",
+    defaultValue: 0.5,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniWaveform_posX",
+    title: "Pos X",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniWaveform_posY",
+    title: "Pos Y",
+    defaultValue: 0.85,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniWaveform_width",
+    title: "Width",
+    defaultValue: 0.35,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "miniWaveform_height",
+    title: "Height",
+    defaultValue: 0.1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+];
+
 export default {
   title: "Post",
   description: "Post-processing effects",
@@ -656,6 +694,10 @@ export default {
     {
       groupTitle: "Glyph",
       params: glyphParamsConfig,
+    },
+    {
+      groupTitle: "Mini Waveform",
+      params: miniWaveformParamsConfig,
     },
   ],
   shots: [

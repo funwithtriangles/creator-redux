@@ -19,6 +19,7 @@ import {
   waterParamsConfig,
   borderParamsConfig,
   glyphParamsConfig,
+  miniWaveformParamsConfig,
   miniSceneParamsConfig,
   trackerParamsConfig,
 } from "./config";
@@ -44,6 +45,7 @@ const uniformsParamsConfig = [
   ...chromaticAberrationParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
+  ...miniWaveformParamsConfig,
   ...miniSceneParamsConfig,
   ...trackerParamsConfig,
 ];
