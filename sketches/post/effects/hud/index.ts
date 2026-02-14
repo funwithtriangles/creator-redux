@@ -113,6 +113,9 @@ export class Hud {
         partText: this.miniScene.partName,
         partTextX: params.border_partTextX,
         partTextY: params.border_partTextY,
+        trackerTextX: params.border_trackerTextX,
+        trackerTextY: params.border_trackerTextY,
+        trackerLines: params.border_trackerLines,
         canvasWidth: renderer.domElement.width,
         canvasHeight: renderer.domElement.height,
       },
@@ -137,5 +140,9 @@ export class Hud {
 
   nextPart() {
     this.miniScene.showNextPart();
+  }
+
+  newTrackerLine() {
+    this.border.newTrackerLine();
   }
 }

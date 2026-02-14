@@ -17,6 +17,7 @@ import {
   waterParamsConfig,
   borderParamsConfig,
   miniSceneParamsConfig,
+  trackerParamsConfig,
 } from "./config";
 import { hsl } from "./effects/hsl";
 import { noise } from "./effects/noise";
@@ -36,6 +37,7 @@ const uniformsParamsConfig = [
   ...noiseParamsConfig,
   ...borderParamsConfig,
   ...miniSceneParamsConfig,
+  ...trackerParamsConfig,
 ];
 
 export default class Post {
@@ -114,6 +116,10 @@ export default class Post {
 
   randomPart() {
     this.hud.randomPart();
+  }
+
+  newTrackerLine() {
+    this.hud.newTrackerLine();
   }
 
   update({ params, deltaFrame, scene }) {

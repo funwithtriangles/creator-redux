@@ -6,6 +6,7 @@ export class Border {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   texture: THREE.CanvasTexture;
+  trackerLines: string[] = [];
 
   constructor() {
     this.canvas = document.createElement("canvas");
@@ -43,6 +44,9 @@ export class Border {
       partText: string;
       partTextX: number;
       partTextY: number;
+      trackerTextX: number;
+      trackerTextY: number;
+      trackerLines: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -134,7 +138,39 @@ export class Border {
       });
     }
 
+    const trackerFontSize = Math.max(8, Math.round(scale * 0.012));
+    const trackerLineHeight = Math.max(10, Math.round(trackerFontSize * 1.2));
+    const trackerTop = p.trackerTextY * height;
+
+    const maxTrackerRows = Math.floor(p.trackerLines);
+
+    if (maxTrackerRows === 0) {
+      this.trackerLines = [];
+    } else if (this.trackerLines.length > maxTrackerRows) {
+      this.trackerLines = this.trackerLines.slice(-maxTrackerRows);
+    }
+
+    this.trackerLines.forEach((line, index) => {
+      this.drawText({
+        text: line,
+        x: p.trackerTextX * width,
+        y: trackerTop + index * trackerLineHeight,
+        fontSize: trackerFontSize,
+        color: p.color,
+        opacity: p.opacity,
+        clearPadding: Math.max(1, Math.round(bw * 0.5)),
+      });
+    });
+
     this.texture.needsUpdate = true;
+  }
+
+  newTrackerLine() {
+    const nextLine = `0x${Math.floor(Math.random() * 0xffffff)
+      .toString(16)
+      .toUpperCase()
+      .padStart(6, "0")}`;
+    this.trackerLines.push(nextLine);
   }
 
   drawText({

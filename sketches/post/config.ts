@@ -285,20 +285,6 @@ export const borderParamsConfig = [
     sliderMax: 1,
   },
   {
-    key: "border_partTextX",
-    title: "Part Text X",
-    defaultValue: 0.05,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "border_partTextY",
-    title: "Part Text Y",
-    defaultValue: 0.12,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
     key: "border_opacity",
     title: "Opacity",
     defaultValue: 1,
@@ -440,6 +426,44 @@ export const miniSceneParamsConfig = [
     valueType: "rgb",
     defaultValue: [1, 1, 1],
   },
+  {
+    key: "border_partTextX",
+    title: "Part Text X",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_partTextY",
+    title: "Part Text Y",
+    defaultValue: 0.12,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+];
+
+export const trackerParamsConfig = [
+  {
+    key: "border_trackerLines",
+    title: "Tracker Lines",
+    defaultValue: 12,
+    sliderMin: 0,
+    sliderMax: 64,
+  },
+  {
+    key: "border_trackerTextX",
+    title: "Tracker Text X",
+    defaultValue: 0.05,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_trackerTextY",
+    title: "Tracker Text Y",
+    defaultValue: 0.16,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
 ];
 
 export default {
@@ -482,6 +506,10 @@ export default {
       groupTitle: "Mini Scene",
       params: miniSceneParamsConfig,
     },
+    {
+      groupTitle: "Tracker",
+      params: trackerParamsConfig,
+    },
   ],
   shots: [
     {
@@ -491,6 +519,10 @@ export default {
     {
       title: "Random Part",
       key: "randomPart",
+    },
+    {
+      title: "New Tracker Line",
+      key: "newTrackerLine",
     },
   ],
 };
