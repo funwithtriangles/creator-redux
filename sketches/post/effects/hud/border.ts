@@ -1,13 +1,21 @@
 import * as THREE from "three";
-import tiny5FontUrl from "@fontsource/tiny5/files/tiny5-latin-400-normal.woff2";
 import bitesizedFontUrl from "@fontsource/bytesized/files/bytesized-latin-400-normal.woff2";
 import { ensureFontInjected } from "./fontUtils";
+
+type GlyphTile =
+  | { shape: "empty" }
+  | { shape: "square" }
+  | { shape: "triangle"; orientation: 0 | 1 | 2 | 3 };
 
 export class Border {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   texture: THREE.CanvasTexture;
   trackerLines: string[] = [];
+  glyphTiles: GlyphTile[] = [];
+  glyphSquareProbability = 0.375;
+  glyphTriangleProbability = 0.375;
+  glyphEmptyProbability = 0.25;
 
   constructor() {
     this.canvas = document.createElement("canvas");
@@ -21,6 +29,8 @@ export class Border {
       fontFamily: "Bytesized",
       fontUrl: bitesizedFontUrl,
     });
+
+    this.newAlienGlyph();
   }
 
   update({
@@ -48,6 +58,12 @@ export class Border {
       trackerTextX: number;
       trackerTextY: number;
       trackerLines: number;
+      glyphScale: number;
+      glyphPosX: number;
+      glyphPosY: number;
+      glyphSquareProbability: number;
+      glyphTriangleProbability: number;
+      glyphEmptyProbability: number;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -67,6 +83,9 @@ export class Border {
     const { width, height } = this.canvas;
     const ctx = this.context;
 
+    this.glyphSquareProbability = Math.max(0, p.glyphSquareProbability);
+    this.glyphTriangleProbability = Math.max(0, p.glyphTriangleProbability);
+    this.glyphEmptyProbability = Math.max(0, p.glyphEmptyProbability);
     ctx.clearRect(0, 0, width, height);
 
     const scale = Math.max(width, height);
@@ -163,6 +182,22 @@ export class Border {
       });
     });
 
+    const glyphScale = Math.max(0.1, p.glyphScale);
+    const glyphSize = Math.max(
+      24,
+      Math.round(Math.min(width, height) * 0.11 * glyphScale),
+    );
+    const glyphX = p.glyphPosX * width;
+    const glyphY = p.glyphPosY * height;
+
+    this.drawGlyph({
+      x: glyphX,
+      y: glyphY,
+      size: glyphSize,
+      color: p.color,
+      opacity: p.opacity,
+    });
+
     this.texture.needsUpdate = true;
   }
 
@@ -172,6 +207,103 @@ export class Border {
       .toUpperCase()
       .padStart(6, "0")}`;
     this.trackerLines.push(nextLine);
+  }
+
+  newAlienGlyph() {
+    const squareProb = Math.max(0, this.glyphSquareProbability);
+    const triangleProb = Math.max(0, this.glyphTriangleProbability);
+    const emptyProb = Math.max(0, this.glyphEmptyProbability);
+    const totalProb = squareProb + triangleProb + emptyProb;
+
+    const normalizedSquareProb = totalProb > 0 ? squareProb / totalProb : 1 / 3;
+    const normalizedTriangleProb =
+      totalProb > 0 ? triangleProb / totalProb : 1 / 3;
+    const normalizedEmptyProb = totalProb > 0 ? emptyProb / totalProb : 1 / 3;
+
+    this.glyphTiles = Array.from({ length: 9 }, () => {
+      const roll = Math.random();
+
+      if (roll < normalizedEmptyProb) {
+        return { shape: "empty" } as const;
+      }
+
+      if (roll < normalizedEmptyProb + normalizedSquareProb) {
+        return { shape: "square" } as const;
+      }
+
+      return {
+        shape: "triangle",
+        orientation: Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3,
+      } as const;
+    });
+  }
+
+  drawGlyph({
+    x,
+    y,
+    size,
+    color,
+    opacity,
+  }: {
+    x: number;
+    y: number;
+    size: number;
+    color: [number, number, number];
+    opacity: number;
+  }) {
+    if (this.glyphTiles.length !== 9) {
+      return;
+    }
+
+    const ctx = this.context;
+    const tileSize = Math.max(2, size / 3);
+
+    ctx.fillStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
+
+    for (let i = 0; i < 9; i++) {
+      const tile = this.glyphTiles[i];
+      const col = i % 3;
+      const row = Math.floor(i / 3);
+      const tx = x + col * tileSize;
+      const ty = y + row * tileSize;
+
+      if (tile.shape === "empty") {
+        continue;
+      }
+
+      if (tile.shape === "square") {
+        ctx.fillRect(tx, ty, tileSize, tileSize);
+        continue;
+      }
+
+      const x0 = tx;
+      const y0 = ty;
+      const x1 = tx + tileSize;
+      const y1 = ty + tileSize;
+
+      ctx.beginPath();
+
+      if (tile.orientation === 0) {
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y0);
+        ctx.lineTo(x0, y1);
+      } else if (tile.orientation === 1) {
+        ctx.moveTo(x1, y0);
+        ctx.lineTo(x1, y1);
+        ctx.lineTo(x0, y0);
+      } else if (tile.orientation === 2) {
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x0, y1);
+        ctx.lineTo(x1, y0);
+      } else {
+        ctx.moveTo(x0, y1);
+        ctx.lineTo(x0, y0);
+        ctx.lineTo(x1, y1);
+      }
+
+      ctx.closePath();
+      ctx.fill();
+    }
   }
 
   drawText({

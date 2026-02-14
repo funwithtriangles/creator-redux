@@ -18,6 +18,7 @@ import {
   chromaticAberrationParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
+  glyphParamsConfig,
   miniSceneParamsConfig,
   trackerParamsConfig,
 } from "./config";
@@ -42,6 +43,7 @@ const uniformsParamsConfig = [
   ...scanlinesParamsConfig,
   ...chromaticAberrationParamsConfig,
   ...borderParamsConfig,
+  ...glyphParamsConfig,
   ...miniSceneParamsConfig,
   ...trackerParamsConfig,
 ];
@@ -147,6 +149,10 @@ export default class Post {
 
   newTrackerLine() {
     this.hud.newTrackerLine();
+  }
+
+  newAlienGlyph() {
+    this.hud.newAlienGlyph();
   }
 
   update({ params, deltaFrame, scene }) {

@@ -116,6 +116,12 @@ export class Hud {
         trackerTextX: params.border_trackerTextX,
         trackerTextY: params.border_trackerTextY,
         trackerLines: params.border_trackerLines,
+        glyphScale: params.border_glyphScale,
+        glyphPosX: params.border_glyphPosX,
+        glyphPosY: params.border_glyphPosY,
+        glyphSquareProbability: params.border_glyphSquareProbability,
+        glyphTriangleProbability: params.border_glyphTriangleProbability,
+        glyphEmptyProbability: params.border_glyphEmptyProbability,
         canvasWidth: renderer.domElement.width,
         canvasHeight: renderer.domElement.height,
       },
@@ -144,5 +150,9 @@ export class Hud {
 
   newTrackerLine() {
     this.border.newTrackerLine();
+  }
+
+  newAlienGlyph() {
+    this.border.newAlienGlyph();
   }
 }

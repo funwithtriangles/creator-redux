@@ -439,6 +439,51 @@ export const borderParamsConfig = [
   },
 ];
 
+export const glyphParamsConfig = [
+  {
+    key: "border_glyphScale",
+    title: "Glyph Scale",
+    defaultValue: 1,
+    sliderMin: 0.25,
+    sliderMax: 3,
+  },
+  {
+    key: "border_glyphPosX",
+    title: "Glyph X",
+    defaultValue: 0.82,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_glyphPosY",
+    title: "Glyph Y",
+    defaultValue: 0.08,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_glyphSquareProbability",
+    title: "Glyph Square Prob",
+    defaultValue: 0.375,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_glyphTriangleProbability",
+    title: "Glyph Triangle Prob",
+    defaultValue: 0.375,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+  {
+    key: "border_glyphEmptyProbability",
+    title: "Glyph Empty Prob",
+    defaultValue: 0.25,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
+];
+
 export const miniSceneParamsConfig = [
   {
     key: "miniScene_opacity",
@@ -594,6 +639,10 @@ export default {
       groupTitle: "Tracker",
       params: trackerParamsConfig,
     },
+    {
+      groupTitle: "Glyph",
+      params: glyphParamsConfig,
+    },
   ],
   shots: [
     {
@@ -607,6 +656,10 @@ export default {
     {
       title: "New Tracker Line",
       key: "newTrackerLine",
+    },
+    {
+      title: "New Alien Glyph",
+      key: "newAlienGlyph",
     },
   ],
 };
