@@ -119,6 +119,8 @@ export class Hud {
         glyphScale: params.border_glyphScale,
         glyphPosX: params.border_glyphPosX,
         glyphPosY: params.border_glyphPosY,
+        glyphTrailCount: params.border_glyphTrailCount,
+        glyphGutter: params.border_glyphGutter,
         glyphSquareProbability: params.border_glyphSquareProbability,
         glyphTriangleProbability: params.border_glyphTriangleProbability,
         glyphEmptyProbability: params.border_glyphEmptyProbability,

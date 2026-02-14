@@ -462,6 +462,20 @@ export const glyphParamsConfig = [
     sliderMax: 1,
   },
   {
+    key: "border_glyphTrailCount",
+    title: "Glyph Trail Count",
+    defaultValue: 4,
+    sliderMin: 0,
+    sliderMax: 16,
+  },
+  {
+    key: "border_glyphGutter",
+    title: "Glyph Gutter",
+    defaultValue: 0,
+    sliderMin: 0,
+    sliderMax: 3,
+  },
+  {
     key: "border_glyphSquareProbability",
     title: "Glyph Square Prob",
     defaultValue: 0.375,

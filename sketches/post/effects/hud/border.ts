@@ -12,7 +12,8 @@ export class Border {
   context: CanvasRenderingContext2D;
   texture: THREE.CanvasTexture;
   trackerLines: string[] = [];
-  glyphTiles: GlyphTile[] = [];
+  glyphHistory: GlyphTile[][] = [];
+  glyphTrailCount = 1;
   glyphSquareProbability = 0.375;
   glyphTriangleProbability = 0.375;
   glyphEmptyProbability = 0.25;
@@ -61,6 +62,8 @@ export class Border {
       glyphScale: number;
       glyphPosX: number;
       glyphPosY: number;
+      glyphTrailCount: number;
+      glyphGutter: number;
       glyphSquareProbability: number;
       glyphTriangleProbability: number;
       glyphEmptyProbability: number;
@@ -86,6 +89,18 @@ export class Border {
     this.glyphSquareProbability = Math.max(0, p.glyphSquareProbability);
     this.glyphTriangleProbability = Math.max(0, p.glyphTriangleProbability);
     this.glyphEmptyProbability = Math.max(0, p.glyphEmptyProbability);
+    this.glyphTrailCount = Math.max(0, Math.floor(p.glyphTrailCount));
+
+    if (this.glyphTrailCount === 0) {
+      this.glyphHistory = [];
+    } else if (this.glyphHistory.length > this.glyphTrailCount) {
+      this.glyphHistory = this.glyphHistory.slice(0, this.glyphTrailCount);
+    }
+
+    if (this.glyphHistory.length === 0 && this.glyphTrailCount > 0) {
+      this.newAlienGlyph();
+    }
+
     ctx.clearRect(0, 0, width, height);
 
     const scale = Math.max(width, height);
@@ -187,15 +202,22 @@ export class Border {
       24,
       Math.round(Math.min(width, height) * 0.11 * glyphScale),
     );
+    const glyphGutter = Math.max(0, p.glyphGutter);
     const glyphX = p.glyphPosX * width;
     const glyphY = p.glyphPosY * height;
 
-    this.drawGlyph({
-      x: glyphX,
-      y: glyphY,
-      size: glyphSize,
-      color: p.color,
-      opacity: p.opacity,
+    const tileSize = Math.max(2, glyphSize / 3);
+    const glyphStepX = tileSize * 3 + glyphGutter * tileSize;
+
+    this.glyphHistory.forEach((glyphTiles, index) => {
+      this.drawGlyph({
+        glyphTiles,
+        x: glyphX + glyphStepX * index,
+        y: glyphY,
+        size: glyphSize,
+        color: p.color,
+        opacity: p.opacity,
+      });
     });
 
     this.texture.needsUpdate = true;
@@ -220,7 +242,7 @@ export class Border {
       totalProb > 0 ? triangleProb / totalProb : 1 / 3;
     const normalizedEmptyProb = totalProb > 0 ? emptyProb / totalProb : 1 / 3;
 
-    this.glyphTiles = Array.from({ length: 9 }, () => {
+    const nextGlyphTiles = Array.from({ length: 9 }, () => {
       const roll = Math.random();
 
       if (roll < normalizedEmptyProb) {
@@ -236,22 +258,33 @@ export class Border {
         orientation: Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3,
       } as const;
     });
+
+    this.glyphHistory.unshift(nextGlyphTiles);
+
+    if (
+      this.glyphTrailCount > 0 &&
+      this.glyphHistory.length > this.glyphTrailCount
+    ) {
+      this.glyphHistory = this.glyphHistory.slice(0, this.glyphTrailCount);
+    }
   }
 
   drawGlyph({
+    glyphTiles,
     x,
     y,
     size,
     color,
     opacity,
   }: {
+    glyphTiles: GlyphTile[];
     x: number;
     y: number;
     size: number;
     color: [number, number, number];
     opacity: number;
   }) {
-    if (this.glyphTiles.length !== 9) {
+    if (glyphTiles.length !== 9) {
       return;
     }
 
@@ -261,7 +294,7 @@ export class Border {
     ctx.fillStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
 
     for (let i = 0; i < 9; i++) {
-      const tile = this.glyphTiles[i];
+      const tile = glyphTiles[i];
       const col = i % 3;
       const row = Math.floor(i / 3);
       const tx = x + col * tileSize;
