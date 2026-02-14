@@ -248,6 +248,10 @@ export class Border {
     this.trackerLines.push(nextLine);
   }
 
+  clearTrackerLines() {
+    this.trackerLines = [];
+  }
+
   newAlienGlyph() {
     const squareProb = Math.max(0, this.glyphSquareProbability);
     const triangleProb = Math.max(0, this.glyphTriangleProbability);

@@ -714,6 +714,10 @@ export default {
       key: "newTrackerLine",
     },
     {
+      title: "Clear Tracker Lines",
+      key: "clearTrackerLines",
+    },
+    {
       title: "New Alien Glyph",
       key: "newAlienGlyph",
     },

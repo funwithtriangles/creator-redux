@@ -153,6 +153,10 @@ export default class Post {
     this.hud.newTrackerLine();
   }
 
+  clearTrackerLines() {
+    this.hud.clearTrackerLines();
+  }
+
   newAlienGlyph() {
     this.hud.newAlienGlyph();
   }

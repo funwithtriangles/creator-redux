@@ -159,6 +159,10 @@ export class Hud {
     this.border.newTrackerLine();
   }
 
+  clearTrackerLines() {
+    this.border.clearTrackerLines();
+  }
+
   newAlienGlyph() {
     this.border.newAlienGlyph();
   }
