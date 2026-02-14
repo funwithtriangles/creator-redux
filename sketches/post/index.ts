@@ -15,6 +15,7 @@ import {
   logoParamsConfig,
   noiseParamsConfig,
   scanlinesParamsConfig,
+  chromaticAberrationParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
   miniSceneParamsConfig,
@@ -27,6 +28,7 @@ import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
 import { bloom } from "./effects/bloom";
 import { scanlines } from "./effects/scanlines";
+import { chromaticAberration } from "./effects/chromaticAberration";
 import Logo from "./effects/logo";
 import { Hud } from "./effects/hud";
 
@@ -38,6 +40,7 @@ const uniformsParamsConfig = [
   ...logoParamsConfig,
   ...noiseParamsConfig,
   ...scanlinesParamsConfig,
+  ...chromaticAberrationParamsConfig,
   ...borderParamsConfig,
   ...miniSceneParamsConfig,
   ...trackerParamsConfig,
@@ -118,6 +121,16 @@ export default class Post {
       this.uniforms.scanlines_speed,
       this.uniforms.scanlines_flicker,
       this.uniforms.scanlines_vignette,
+      this.scanlines_resolutionY,
+    );
+
+    p = chromaticAberration(
+      p,
+      this.uniforms.chromaticAberration_intensity,
+      this.uniforms.chromaticAberration_edgeStart,
+      this.uniforms.chromaticAberration_falloff,
+      this.uniforms.chromaticAberration_redOffset,
+      this.uniforms.chromaticAberration_blueOffset,
       this.scanlines_resolutionY,
     );
 
