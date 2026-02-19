@@ -51,8 +51,14 @@ export class Hud {
     const msAspect = this.aspect;
     const msScaleX = msScale.div(msAspect);
     // msPos is now the center position in normalized screen space
-    const msRectMin = vec2(msPos.x.sub(msScaleX.mul(0.5)), msPos.y.sub(msScale.mul(0.5)));
-    const msRectMax = vec2(msPos.x.add(msScaleX.mul(0.5)), msPos.y.add(msScale.mul(0.5)));
+    const msRectMin = vec2(
+      msPos.x.sub(msScaleX.mul(0.5)),
+      msPos.y.sub(msScale.mul(0.5)),
+    );
+    const msRectMax = vec2(
+      msPos.x.add(msScaleX.mul(0.5)),
+      msPos.y.add(msScale.mul(0.5)),
+    );
     // UV remap
     const msUV = vec2(
       screenUV.x.sub(msRectMin.x).div(msRectMax.x.sub(msRectMin.x)),
