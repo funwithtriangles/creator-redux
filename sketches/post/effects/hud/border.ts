@@ -52,25 +52,20 @@ export class Border {
       bevelBottomRight: number;
       bevelBottomLeft: number;
       titleText: string;
-      titleTextX: number;
-      titleTextY: number;
+      titleTextPos: [number, number];
       partText: string;
-      partTextX: number;
-      partTextY: number;
-      trackerTextX: number;
-      trackerTextY: number;
+      partTextPos: [number, number];
+      trackerTextPos: [number, number];
       trackerLines: number;
       glyphScale: number;
-      glyphPosX: number;
-      glyphPosY: number;
+      glyphPos: [number, number];
       glyphTrailCount: number;
       glyphGutter: number;
       glyphSquareProbability: number;
       glyphTriangleProbability: number;
       glyphEmptyProbability: number;
       miniWaveform_latestValue: number;
-      miniWaveform_posX: number;
-      miniWaveform_posY: number;
+      miniWaveform_pos: [number, number];
       miniWaveform_width: number;
       miniWaveform_height: number;
       canvasWidth: number;
@@ -158,8 +153,8 @@ export class Border {
     if (p.titleText) {
       this.drawText({
         text: p.titleText,
-        x: p.titleTextX * width,
-        y: p.titleTextY * height,
+        x: p.titleTextPos[0] * width,
+        y: p.titleTextPos[1] * height,
         fontSize: Math.max(12, Math.round(scale * 0.025)),
         color: p.color,
         opacity: p.opacity,
@@ -170,8 +165,8 @@ export class Border {
     if (p.partText) {
       this.drawText({
         text: p.partText,
-        x: p.partTextX * width,
-        y: p.partTextY * height,
+        x: p.partTextPos[0] * width,
+        y: p.partTextPos[1] * height,
         fontSize: Math.max(10, Math.round(scale * 0.02)),
         color: p.color,
         opacity: p.opacity,
@@ -181,7 +176,7 @@ export class Border {
 
     const trackerFontSize = Math.max(8, Math.round(scale * 0.015));
     const trackerLineHeight = Math.max(10, Math.round(trackerFontSize * 1.2));
-    const trackerTop = p.trackerTextY * height;
+    const trackerTop = p.trackerTextPos[1] * height;
 
     const maxTrackerRows = Math.floor(p.trackerLines);
 
@@ -194,7 +189,7 @@ export class Border {
     this.trackerLines.forEach((line, index) => {
       this.drawText({
         text: line,
-        x: p.trackerTextX * width,
+        x: p.trackerTextPos[0] * width,
         y: trackerTop + index * trackerLineHeight,
         fontSize: trackerFontSize,
         color: p.color,
@@ -209,8 +204,8 @@ export class Border {
       Math.round(Math.min(width, height) * 0.11 * glyphScale),
     );
     const glyphGutter = Math.max(0, p.glyphGutter);
-    const glyphX = p.glyphPosX * width;
-    const glyphY = p.glyphPosY * height;
+    const glyphX = p.glyphPos[0] * width;
+    const glyphY = p.glyphPos[1] * height;
 
     const tileSize = Math.max(2, glyphSize / 3);
     const glyphStepX = tileSize * 3 + glyphGutter * tileSize;
@@ -228,8 +223,8 @@ export class Border {
 
     this.drawMiniWaveform({
       latestValue: p.miniWaveform_latestValue,
-      x: p.miniWaveform_posX * width,
-      y: p.miniWaveform_posY * height,
+      x: p.miniWaveform_pos[0] * width,
+      y: p.miniWaveform_pos[1] * height,
       width: p.miniWaveform_width * width,
       height: p.miniWaveform_height * height,
       color: p.color,

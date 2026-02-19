@@ -46,16 +46,15 @@ export class Hud {
 
     // Mini scene overlay in corner
     const msScale = uniforms.miniScene_scale;
-    const msPosX = uniforms.miniScene_posX;
-    const msPosY = uniforms.miniScene_posY;
+    const msPos = uniforms.miniScene_pos;
     const msOpacity = uniforms.miniScene_opacity;
     // Remap UVs to sample the mini scene texture within its corner rect
     // Correct X by aspect ratio so the overlay is square
     // posX/posY are offsets from the bottom-right corner
     const msAspect = this.aspect;
     const msScaleX = msScale.div(msAspect);
-    const msCenterX = float(1).sub(msPosX).sub(msScaleX.mul(0.5));
-    const msCenterY = float(1).sub(msPosY).sub(msScale.mul(0.5));
+    const msCenterX = float(1).sub(msPos.x).sub(msScaleX.mul(0.5));
+    const msCenterY = float(1).sub(msPos.y).sub(msScale.mul(0.5));
     const msUV = vec2(
       screenUV.x.sub(msCenterX).add(msScaleX.mul(0.5)).div(msScaleX),
       screenUV.y.sub(msCenterY).add(msScale.mul(0.5)).div(msScale),
@@ -108,25 +107,20 @@ export class Hud {
         bevelBottomRight: params.border_bevelBottomRight,
         bevelBottomLeft: params.border_bevelBottomLeft,
         titleText: params.border_titleText,
-        titleTextX: params.border_titleTextX,
-        titleTextY: params.border_titleTextY,
+        titleTextPos: params.border_titleTextPos,
         partText: this.miniScene.partName,
-        partTextX: params.border_partTextX,
-        partTextY: params.border_partTextY,
-        trackerTextX: params.border_trackerTextX,
-        trackerTextY: params.border_trackerTextY,
+        partTextPos: params.border_partTextPos,
+        trackerTextPos: params.border_trackerTextPos,
         trackerLines: params.border_trackerLines,
         glyphScale: params.border_glyphScale,
-        glyphPosX: params.border_glyphPosX,
-        glyphPosY: params.border_glyphPosY,
+        glyphPos: params.border_glyphPos,
         glyphTrailCount: params.border_glyphTrailCount,
         glyphGutter: params.border_glyphGutter,
         glyphSquareProbability: params.border_glyphSquareProbability,
         glyphTriangleProbability: params.border_glyphTriangleProbability,
         glyphEmptyProbability: params.border_glyphEmptyProbability,
         miniWaveform_latestValue: params.miniWaveform_latestValue,
-        miniWaveform_posX: params.miniWaveform_posX,
-        miniWaveform_posY: params.miniWaveform_posY,
+        miniWaveform_pos: params.miniWaveform_pos,
         miniWaveform_width: params.miniWaveform_width,
         miniWaveform_height: params.miniWaveform_height,
         canvasWidth: renderer.domElement.width,

@@ -1,20 +1,22 @@
 import { uniform } from "three/tsl";
-import { Color } from "three/webgpu";
+import { Color, Vector2 } from "three/webgpu";
 
 // Define the shape of a uniform parameter with better typing
 interface UniformParamConfig {
   key: string;
   defaultValue: any;
-  valueType?: "rgb" | "number";
+  valueType?: "rgb" | "vector2" | "number";
 }
 
 // Helper type to infer the correct uniform type based on valueType
 type UniformValueType<T extends UniformParamConfig> =
   T["valueType"] extends "rgb"
     ? Color
-    : T["valueType"] extends "number"
-      ? number
-      : T["defaultValue"];
+    : T["valueType"] extends "vector2"
+      ? Vector2
+      : T["valueType"] extends "number"
+        ? number
+        : T["defaultValue"];
 
 // Create a mapped type that converts the params array to the correct uniform object shape
 type UniformsFromParams<T extends readonly UniformParamConfig[]> = {
@@ -34,6 +36,8 @@ export const convertParamsToUniforms = <
     switch (param.valueType) {
       case "rgb":
         return uniform(new Color(...param.defaultValue));
+      case "vector2":
+        return uniform(new Vector2(...param.defaultValue));
       case "number":
       default:
         return uniform(param.defaultValue);
@@ -65,6 +69,9 @@ export const updateUniforms = (
     if (!(cfg.key in params)) continue;
     switch (cfg.valueType) {
       case "rgb":
+        uniforms[cfg.key].value.set(...params[cfg.key]);
+        break;
+      case "vector2":
         uniforms[cfg.key].value.set(...params[cfg.key]);
         break;
       case "number":
