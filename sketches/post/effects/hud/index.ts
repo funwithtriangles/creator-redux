@@ -44,20 +44,19 @@ export class Hud {
     });
     p = mix(p, borderSample, borderSample.a);
 
-    // Mini scene overlay in corner
+    // Mini scene overlay at direct position (like partText)
     const msScale = uniforms.miniScene_scale;
     const msPos = uniforms.miniScene_pos;
     const msOpacity = uniforms.miniScene_opacity;
-    // Remap UVs to sample the mini scene texture within its corner rect
-    // Correct X by aspect ratio so the overlay is square
-    // posX/posY are offsets from the bottom-right corner
     const msAspect = this.aspect;
     const msScaleX = msScale.div(msAspect);
-    const msCenterX = float(1).sub(msPos.x).sub(msScaleX.mul(0.5));
-    const msCenterY = float(1).sub(msPos.y).sub(msScale.mul(0.5));
+    // msPos is now the center position in normalized screen space
+    const msRectMin = vec2(msPos.x.sub(msScaleX.mul(0.5)), msPos.y.sub(msScale.mul(0.5)));
+    const msRectMax = vec2(msPos.x.add(msScaleX.mul(0.5)), msPos.y.add(msScale.mul(0.5)));
+    // UV remap
     const msUV = vec2(
-      screenUV.x.sub(msCenterX).add(msScaleX.mul(0.5)).div(msScaleX),
-      screenUV.y.sub(msCenterY).add(msScale.mul(0.5)).div(msScale),
+      screenUV.x.sub(msRectMin.x).div(msRectMax.x.sub(msRectMin.x)),
+      screenUV.y.sub(msRectMin.y).div(msRectMax.y.sub(msRectMin.y)),
     );
     // Mask: 1 inside the rect, 0 outside
     const inX = step(float(0), msUV.x).mul(step(msUV.x, float(1)));
