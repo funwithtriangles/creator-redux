@@ -9,12 +9,10 @@ import {
 } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import {
-  bloomParamsConfig,
   gradientMapParamsConfig,
   HSLParamsConfig,
   logoParamsConfig,
   noiseParamsConfig,
-  scanlinesParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
   glyphParamsConfig,
@@ -27,19 +25,15 @@ import { noise } from "./effects/noise";
 import { water } from "./effects/water";
 import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
-import { bloom } from "./effects/bloom";
-import { scanlines } from "./effects/scanlines";
 import Logo from "./effects/logo";
 import { Hud } from "./effects/hud";
 
 const uniformsParamsConfig = [
-  ...bloomParamsConfig,
   ...HSLParamsConfig,
   ...waterParamsConfig,
   ...gradientMapParamsConfig,
   ...logoParamsConfig,
   ...noiseParamsConfig,
-  ...scanlinesParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
   ...miniWaveformParamsConfig,
@@ -50,7 +44,6 @@ const uniformsParamsConfig = [
 export default class Post {
   uniforms = convertParamsToUniforms(uniformsParamsConfig);
   water_waveTime = uniform(0);
-  scanlines_resolutionY = uniform(1080);
   renderer: WebGPURenderer;
 
   logo = new Logo();
@@ -108,21 +101,7 @@ export default class Post {
     const logoTex = texture(this.logo.texture);
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
 
-    this.bloomPass = bloom(p);
-
-    p = p.add(this.bloomPass);
-
     p = noise(p, this.uniforms.noise_intensity, this.uniforms.noise_speed);
-
-    p = scanlines(
-      p,
-      this.uniforms.scanlines_intensity,
-      this.uniforms.scanlines_density,
-      this.uniforms.scanlines_speed,
-      this.uniforms.scanlines_flicker,
-      this.uniforms.scanlines_vignette,
-      this.scanlines_resolutionY,
-    );
 
     return p;
   }
@@ -149,7 +128,6 @@ export default class Post {
 
   update({ params, deltaFrame, scene }) {
     this.water_waveTime.value += params.water_speed * deltaFrame;
-    this.scanlines_resolutionY.value = this.renderer.domElement.height || 1080;
 
     this.shoutout.update({
       params: {
@@ -182,11 +160,5 @@ export default class Post {
     });
 
     updateUniforms(uniformsParamsConfig, this.uniforms, params);
-
-    if (this.bloomPass) {
-      this.bloomPass.threshold.value = params.bloom_threshold;
-      this.bloomPass.strength.value = params.bloom_strength;
-      this.bloomPass.radius.value = params.bloom_radius;
-    }
   }
 }

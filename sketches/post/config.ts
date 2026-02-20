@@ -216,30 +216,6 @@ export const logoParamsConfig = [
   },
 ];
 
-export const bloomParamsConfig = [
-  {
-    key: "bloom_strength",
-    title: "Strength",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 5,
-  },
-  {
-    key: "bloom_radius",
-    title: "Radius",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 5,
-  },
-  {
-    key: "bloom_threshold",
-    title: "Threshold",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-];
-
 export const noiseParamsConfig = [
   {
     key: "noise_intensity",
@@ -254,44 +230,6 @@ export const noiseParamsConfig = [
     defaultValue: 10,
     sliderMin: 0,
     sliderMax: 100,
-  },
-];
-
-export const scanlinesParamsConfig = [
-  {
-    key: "scanlines_intensity",
-    title: "Intensity",
-    defaultValue: 0.15,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "scanlines_density",
-    title: "Density",
-    defaultValue: 900,
-    sliderMin: 100,
-    sliderMax: 3000,
-  },
-  {
-    key: "scanlines_speed",
-    title: "Speed",
-    defaultValue: 2,
-    sliderMin: 0,
-    sliderMax: 20,
-  },
-  {
-    key: "scanlines_flicker",
-    title: "Flicker",
-    defaultValue: 0.05,
-    sliderMin: 0,
-    sliderMax: 0.5,
-  },
-  {
-    key: "scanlines_vignette",
-    title: "Vignette",
-    defaultValue: 0.35,
-    sliderMin: 0,
-    sliderMax: 2,
   },
 ];
 
@@ -578,16 +516,8 @@ export default {
       params: logoParamsConfig,
     },
     {
-      groupTitle: "Bloom",
-      params: bloomParamsConfig,
-    },
-    {
       groupTitle: "Noise",
       params: noiseParamsConfig,
-    },
-    {
-      groupTitle: "Scanlines",
-      params: scanlinesParamsConfig,
     },
     {
       groupTitle: "Border",
