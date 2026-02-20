@@ -310,27 +310,27 @@ export const chromaticAberrationParamsConfig = [
     sliderMin: 0,
     sliderMax: 1,
   },
-  {
-    key: "chromaticAberration_falloff",
-    title: "Falloff",
-    defaultValue: 2,
-    sliderMin: 0.1,
-    sliderMax: 6,
-  },
-  {
-    key: "chromaticAberration_redOffset",
-    title: "Red Split",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 3,
-  },
-  {
-    key: "chromaticAberration_blueOffset",
-    title: "Blue Split",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 3,
-  },
+    {
+      key: "chromaticAberration_falloff",
+      title: "Falloff",
+      defaultValue: 2,
+      sliderMin: 0.1,
+      sliderMax: 6,
+    },
+    {
+      key: "chromaticAberration_redOffset",
+      title: "Red Split",
+      defaultValue: 1,
+      sliderMin: 0,
+      sliderMax: 3,
+    },
+    {
+      key: "chromaticAberration_blueOffset",
+      title: "Blue Split",
+      defaultValue: 1,
+      sliderMin: 0,
+      sliderMax: 3,
+    },
 ];
 
 export const borderParamsConfig = [
@@ -626,10 +626,6 @@ export default {
     {
       groupTitle: "Scanlines",
       params: scanlinesParamsConfig,
-    },
-    {
-      groupTitle: "Chromatic Aberration",
-      params: chromaticAberrationParamsConfig,
     },
     {
       groupTitle: "Border",

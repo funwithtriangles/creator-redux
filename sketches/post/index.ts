@@ -15,7 +15,6 @@ import {
   logoParamsConfig,
   noiseParamsConfig,
   scanlinesParamsConfig,
-  chromaticAberrationParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
   glyphParamsConfig,
@@ -30,7 +29,6 @@ import { Shoutout } from "./effects/shoutout";
 import { gradientMap } from "./effects/gradientMap";
 import { bloom } from "./effects/bloom";
 import { scanlines } from "./effects/scanlines";
-import { chromaticAberration } from "./effects/chromaticAberration";
 import Logo from "./effects/logo";
 import { Hud } from "./effects/hud";
 
@@ -42,7 +40,6 @@ const uniformsParamsConfig = [
   ...logoParamsConfig,
   ...noiseParamsConfig,
   ...scanlinesParamsConfig,
-  ...chromaticAberrationParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
   ...miniWaveformParamsConfig,
@@ -62,6 +59,7 @@ export default class Post {
   constructor({ renderer }: { renderer: WebGPURenderer }) {
     this.renderer = renderer;
 
+
     this.shoutout = new Shoutout();
     this.shoutoutTex = texture(this.shoutout.texture);
 
@@ -70,8 +68,6 @@ export default class Post {
 
   getWebGPUPass(prevPass: ShaderNodeObject<Node>): ShaderNodeObject<Node> {
     let p = prevPass;
-
-    this.bloomPass = bloom(p);
 
     // console.log();
     p = water(
@@ -98,8 +94,6 @@ export default class Post {
       this.uniforms.hsl_luminance,
     );
 
-    const logoTex = texture(this.logo.texture);
-
     p = p.add(
       p,
       water(
@@ -112,7 +106,10 @@ export default class Post {
     // HUD overlay (border + mini scene)
     p = this.hud.getNode(p, this.uniforms);
 
+    const logoTex = texture(this.logo.texture);
     p = mix(p, logoTex, logoTex.a.mul(this.uniforms.logo_opacity));
+
+    this.bloomPass = bloom(p);
 
     p = p.add(this.bloomPass);
 
@@ -128,15 +125,6 @@ export default class Post {
       this.scanlines_resolutionY,
     );
 
-    p = chromaticAberration(
-      p,
-      this.uniforms.chromaticAberration_intensity,
-      this.uniforms.chromaticAberration_edgeStart,
-      this.uniforms.chromaticAberration_falloff,
-      this.uniforms.chromaticAberration_redOffset,
-      this.uniforms.chromaticAberration_blueOffset,
-      this.scanlines_resolutionY,
-    );
 
     return p;
   }
@@ -164,6 +152,7 @@ export default class Post {
   update({ params, deltaFrame, scene }) {
     this.water_waveTime.value += params.water_speed * deltaFrame;
     this.scanlines_resolutionY.value = this.renderer.domElement.height || 1080;
+
 
     this.shoutout.update({
       params: {
