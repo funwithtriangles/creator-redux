@@ -295,44 +295,6 @@ export const scanlinesParamsConfig = [
   },
 ];
 
-export const chromaticAberrationParamsConfig = [
-  {
-    key: "chromaticAberration_intensity",
-    title: "Shift",
-    defaultValue: 2,
-    sliderMin: 0,
-    sliderMax: 24,
-  },
-  {
-    key: "chromaticAberration_edgeStart",
-    title: "Edge Start",
-    defaultValue: 0.35,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "chromaticAberration_falloff",
-    title: "Falloff",
-    defaultValue: 2,
-    sliderMin: 0.1,
-    sliderMax: 6,
-  },
-  {
-    key: "chromaticAberration_redOffset",
-    title: "Red Split",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 3,
-  },
-  {
-    key: "chromaticAberration_blueOffset",
-    title: "Blue Split",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 3,
-  },
-];
-
 export const borderParamsConfig = [
   {
     key: "border_color",
