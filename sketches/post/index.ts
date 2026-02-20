@@ -59,7 +59,6 @@ export default class Post {
   constructor({ renderer }: { renderer: WebGPURenderer }) {
     this.renderer = renderer;
 
-
     this.shoutout = new Shoutout();
     this.shoutoutTex = texture(this.shoutout.texture);
 
@@ -125,7 +124,6 @@ export default class Post {
       this.scanlines_resolutionY,
     );
 
-
     return p;
   }
 
@@ -152,7 +150,6 @@ export default class Post {
   update({ params, deltaFrame, scene }) {
     this.water_waveTime.value += params.water_speed * deltaFrame;
     this.scanlines_resolutionY.value = this.renderer.domElement.height || 1080;
-
 
     this.shoutout.update({
       params: {
