@@ -274,8 +274,8 @@ export const miniWaveformParamsConfig = [
 ];
 
 export default {
-  title: "Post",
-  description: "Post-processing effects",
+  title: "HUD",
+  description: "Cyberpunk HUD with various elements and a mini 3D scene",
   params: [
     {
       groupTitle: "Noise",
