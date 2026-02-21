@@ -13,7 +13,7 @@ import {
   Color,
 } from "three/webgpu";
 import { uniform } from "three/tsl";
-import glbUrl from "../../../creator/creator.glb";
+import glbUrl from "../../creator/creator.glb";
 import {
   wireframeAlphaFloat,
   wireframeEmissiveColor,

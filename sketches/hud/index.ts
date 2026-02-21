@@ -1,19 +1,17 @@
 import { Node, PassNode, WebGPURenderer } from "three/webgpu";
-import { uniform, type ShaderNodeObject, convertToTexture } from "three/tsl";
+import { type ShaderNodeObject } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import {
-  noiseParamsConfig,
   borderParamsConfig,
   glyphParamsConfig,
   miniWaveformParamsConfig,
   miniSceneParamsConfig,
   trackerParamsConfig,
 } from "./config";
-import { noise } from "./effects/noise";
-import { Hud } from "./effects/hud";
+
+import { Hud } from "./elements";
 
 const uniformsParamsConfig = [
-  ...noiseParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
   ...miniWaveformParamsConfig,
@@ -40,7 +38,6 @@ export default class Post {
 
     // HUD overlay (border + mini scene)
     p = this.hud.getNode(p, this.uniforms);
-    p = noise(p, this.uniforms.noise_intensity, this.uniforms.noise_speed);
 
     return p;
   }

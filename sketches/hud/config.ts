@@ -1,20 +1,3 @@
-export const noiseParamsConfig = [
-  {
-    key: "noise_intensity",
-    title: "Intensity",
-    defaultValue: 0.1,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "noise_speed",
-    title: "Speed",
-    defaultValue: 10,
-    sliderMin: 0,
-    sliderMax: 100,
-  },
-];
-
 export const borderParamsConfig = [
   {
     key: "border_color",
@@ -277,10 +260,6 @@ export default {
   title: "HUD",
   description: "Cyberpunk HUD with various elements and a mini 3D scene",
   params: [
-    {
-      groupTitle: "Noise",
-      params: noiseParamsConfig,
-    },
     {
       groupTitle: "Border",
       params: borderParamsConfig,
