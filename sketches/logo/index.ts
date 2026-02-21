@@ -10,7 +10,7 @@ import { Node, PassNode } from "three/webgpu";
 
 import logoUrl from "./logo-tex.png";
 import { mix, ShaderNodeObject, texture } from "three/tsl";
-import { convertParamsToUniforms } from "../../uniformUtils";
+import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import config from "./config";
 
 const textureLoader = new TextureLoader();
@@ -45,6 +45,8 @@ export default class Logo {
 
   update({ deltaFrame, params: p, scene }) {
     if (!this.texture.image) return;
+
+    updateUniforms(config.params, this.uniforms, p);
 
     const scale = 1 / p.scale;
 
