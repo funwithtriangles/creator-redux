@@ -39,125 +39,6 @@ export const waterParamsConfig = [
   },
 ];
 
-export const shoutoutParamsConfig = [
-  {
-    key: "shoutout_message",
-    title: "Message",
-    valueType: "string",
-    defaultValue: "Hello, world!",
-  },
-  {
-    key: "shoutout_message1",
-    title: "Message 2",
-    valueType: "string",
-    defaultValue: "Hello, world!",
-  },
-  {
-    key: "shoutout_message2",
-    title: "Message 3",
-    valueType: "string",
-    defaultValue: "Hello, world!",
-  },
-  {
-    key: "shoutout_scrollSpeed",
-    title: "Scroll Speed",
-    defaultValue: 2,
-    sliderMin: 0,
-    sliderMax: 10,
-  },
-  {
-    key: "shoutout_color",
-    title: "Color",
-    valueType: "rgb",
-    defaultValue: [1, 1, 1],
-  },
-  {
-    key: "shoutout_positionX",
-    title: "Position X",
-    defaultValue: 0,
-    sliderMin: -1,
-    sliderMax: 1,
-  },
-  {
-    key: "shoutout_positionX1",
-    title: "Position X 2",
-    defaultValue: 0,
-    sliderMin: -1,
-    sliderMax: 1,
-  },
-  {
-    key: "shoutout_positionX2",
-    title: "Position X 3",
-    defaultValue: 0,
-    sliderMin: -1,
-    sliderMax: 1,
-  },
-  {
-    key: "shoutout_positionY",
-    title: "Position Y",
-    defaultValue: 0,
-    sliderMin: -0.5,
-    sliderMax: 0.5,
-  },
-  {
-    key: "shoutout_positionY1",
-    title: "Position Y 2",
-    defaultValue: 0,
-    sliderMin: -0.5,
-    sliderMax: 0.5,
-  },
-  {
-    key: "shoutout_positionY2",
-    title: "Position Y 3",
-    defaultValue: 0,
-    sliderMin: -0.5,
-    sliderMax: 0.5,
-  },
-  {
-    key: "shoutout_scale",
-    title: "Scale",
-    defaultValue: 1,
-    sliderMin: 0.1,
-    sliderMax: 3,
-  },
-  {
-    key: "shoutout_scale1",
-    title: "Scale 2",
-    defaultValue: 1,
-    sliderMin: 0.1,
-    sliderMax: 3,
-  },
-  {
-    key: "shoutout_scale2",
-    title: "Scale 3",
-    defaultValue: 1,
-    sliderMin: 0.1,
-    sliderMax: 3,
-  },
-  {
-    key: "shoutout_rotation",
-    title: "Rotation",
-    defaultValue: 0,
-    sliderMin: -Math.PI,
-    sliderMax: Math.PI,
-  },
-
-  {
-    key: "shoutout_opacity",
-    title: "Opacity",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "shoutout_waterIntensity",
-    title: "Water Intensity",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-];
-
 export const gradientMapParamsConfig = [
   {
     key: "gradientMap_intensity",
@@ -198,21 +79,6 @@ export const gradientMapParamsConfig = [
     key: "gradientMap_pos2",
     title: "Pos 2",
     defaultValue: 1,
-  },
-];
-
-export const logoParamsConfig = [
-  {
-    key: "logo_opacity",
-    title: "Opacity",
-    defaultValue: 1,
-  },
-  {
-    key: "logo_scale",
-    title: "Scale",
-    defaultValue: 1,
-    sliderMin: 0.1,
-    sliderMax: 3,
   },
 ];
 
@@ -504,16 +370,8 @@ export default {
       params: HSLParamsConfig,
     },
     {
-      groupTitle: "Shoutout",
-      params: shoutoutParamsConfig,
-    },
-    {
       groupTitle: "Gradient Map",
       params: gradientMapParamsConfig,
-    },
-    {
-      groupTitle: "Logo",
-      params: logoParamsConfig,
     },
     {
       groupTitle: "Noise",
