@@ -1,20 +1,3 @@
-export const waterParamsConfig = [
-  {
-    title: "intensity",
-    key: "water_intensity",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 5,
-  },
-  {
-    title: "speed",
-    key: "water_speed",
-    defaultValue: 1,
-    sliderMin: 0,
-    sliderMax: 0.01,
-  },
-];
-
 export const noiseParamsConfig = [
   {
     key: "noise_intensity",
@@ -294,10 +277,6 @@ export default {
   title: "Post",
   description: "Post-processing effects",
   params: [
-    {
-      groupTitle: "Water",
-      params: waterParamsConfig,
-    },
     {
       groupTitle: "Noise",
       params: noiseParamsConfig,

@@ -3,7 +3,6 @@ import { uniform, type ShaderNodeObject, convertToTexture } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import {
   noiseParamsConfig,
-  waterParamsConfig,
   borderParamsConfig,
   glyphParamsConfig,
   miniWaveformParamsConfig,
@@ -11,11 +10,9 @@ import {
   trackerParamsConfig,
 } from "./config";
 import { noise } from "./effects/noise";
-import { water } from "./effects/water";
 import { Hud } from "./effects/hud";
 
 const uniformsParamsConfig = [
-  ...waterParamsConfig,
   ...noiseParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
@@ -26,7 +23,6 @@ const uniformsParamsConfig = [
 
 export default class Post {
   uniforms = convertParamsToUniforms(uniformsParamsConfig);
-  water_waveTime = uniform(0);
   renderer: WebGPURenderer;
 
   hud = new Hud();
@@ -44,13 +40,6 @@ export default class Post {
 
     // HUD overlay (border + mini scene)
     p = this.hud.getNode(p, this.uniforms);
-
-    p = water(
-      convertToTexture(p),
-      this.uniforms.water_intensity,
-      this.water_waveTime,
-    );
-
     p = noise(p, this.uniforms.noise_intensity, this.uniforms.noise_speed);
 
     return p;
@@ -77,8 +66,6 @@ export default class Post {
   }
 
   update({ params, deltaFrame, scene }) {
-    this.water_waveTime.value += params.water_speed * deltaFrame;
-
     this.hud.update({
       renderer: this.renderer,
       deltaFrame,
