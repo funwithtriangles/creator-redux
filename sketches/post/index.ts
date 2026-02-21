@@ -2,8 +2,6 @@ import { Node, PassNode, WebGPURenderer } from "three/webgpu";
 import { uniform, type ShaderNodeObject, convertToTexture } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import {
-  gradientMapParamsConfig,
-  HSLParamsConfig,
   noiseParamsConfig,
   waterParamsConfig,
   borderParamsConfig,
@@ -12,16 +10,12 @@ import {
   miniSceneParamsConfig,
   trackerParamsConfig,
 } from "./config";
-import { hsl } from "./effects/hsl";
 import { noise } from "./effects/noise";
 import { water } from "./effects/water";
-import { gradientMap } from "./effects/gradientMap";
 import { Hud } from "./effects/hud";
 
 const uniformsParamsConfig = [
-  ...HSLParamsConfig,
   ...waterParamsConfig,
-  ...gradientMapParamsConfig,
   ...noiseParamsConfig,
   ...borderParamsConfig,
   ...glyphParamsConfig,
@@ -47,24 +41,6 @@ export default class Post {
     renderPassNode: ShaderNodeObject<PassNode>,
   ): ShaderNodeObject<Node> {
     let p = prevPass;
-
-    p = gradientMap(
-      p,
-      this.uniforms.gradientMap_intensity,
-      this.uniforms.gradientMap_color0,
-      this.uniforms.gradientMap_pos0,
-      this.uniforms.gradientMap_color1,
-      this.uniforms.gradientMap_pos1,
-      this.uniforms.gradientMap_color2,
-      this.uniforms.gradientMap_pos2,
-    );
-
-    p = hsl(
-      p,
-      this.uniforms.hsl_hue,
-      this.uniforms.hsl_saturation,
-      this.uniforms.hsl_luminance,
-    );
 
     // HUD overlay (border + mini scene)
     p = this.hud.getNode(p, this.uniforms);
