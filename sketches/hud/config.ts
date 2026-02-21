@@ -1,10 +1,13 @@
-export const borderParamsConfig = [
+export const generalParamsConfig = [
   {
-    key: "border_color",
-    title: "Color",
+    key: "hud_color",
+    title: "HUD Color",
     valueType: "rgb",
     defaultValue: [1, 1, 1],
   },
+];
+
+export const borderParamsConfig = [
   {
     key: "border_titleText",
     title: "Title Text",
@@ -197,12 +200,6 @@ export const miniSceneParamsConfig = [
     sliderMax: 1,
   },
   {
-    key: "hud_color",
-    title: "HUD Color",
-    valueType: "rgb",
-    defaultValue: [1, 1, 1],
-  },
-  {
     key: "border_partTextPos",
     title: "Part Text Position",
     valueType: "vector2",
@@ -260,6 +257,10 @@ export default {
   title: "HUD",
   description: "Cyberpunk HUD with various elements and a mini 3D scene",
   params: [
+    {
+      groupTitle: "General",
+      params: generalParamsConfig,
+    },
     {
       groupTitle: "Border",
       params: borderParamsConfig,

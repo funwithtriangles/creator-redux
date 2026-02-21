@@ -99,7 +99,7 @@ export class Hud {
   }) {
     this.border.update({
       params: {
-        color: params.border_color,
+        color: params.hud_color,
         opacity: params.border_opacity,
         padding: params.border_padding,
         topOffset: params.border_topOffset,

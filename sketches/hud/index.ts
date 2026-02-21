@@ -1,26 +1,12 @@
 import { Node, PassNode, WebGPURenderer } from "three/webgpu";
 import { type ShaderNodeObject } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
-import {
-  borderParamsConfig,
-  glyphParamsConfig,
-  miniWaveformParamsConfig,
-  miniSceneParamsConfig,
-  trackerParamsConfig,
-} from "./config";
+import config from "./config";
 
 import { Hud } from "./elements";
 
-const uniformsParamsConfig = [
-  ...borderParamsConfig,
-  ...glyphParamsConfig,
-  ...miniWaveformParamsConfig,
-  ...miniSceneParamsConfig,
-  ...trackerParamsConfig,
-];
-
-export default class Post {
-  uniforms = convertParamsToUniforms(uniformsParamsConfig);
+export default class HUD {
+  uniforms = convertParamsToUniforms(config.params);
   renderer: WebGPURenderer;
 
   hud = new Hud();
@@ -70,6 +56,6 @@ export default class Post {
       camera: scene.camera,
     });
 
-    updateUniforms(uniformsParamsConfig, this.uniforms, params);
+    updateUniforms(config.params, this.uniforms, params);
   }
 }
