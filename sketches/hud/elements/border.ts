@@ -64,6 +64,7 @@ export class Border {
       glyphSquareProbability: number;
       glyphTriangleProbability: number;
       glyphEmptyProbability: number;
+      miniWaveform_title: string;
       miniWaveform_latestValue: number;
       miniWaveform_pos: [number, number];
       miniWaveform_width: number;
@@ -223,6 +224,7 @@ export class Border {
 
     this.drawMiniWaveform({
       latestValue: p.miniWaveform_latestValue,
+      title: p.miniWaveform_title,
       x: p.miniWaveform_pos[0] * width,
       y: p.miniWaveform_pos[1] * height,
       width: p.miniWaveform_width * width,
@@ -355,6 +357,7 @@ export class Border {
 
   drawMiniWaveform({
     latestValue,
+    title,
     x,
     y,
     width,
@@ -364,6 +367,7 @@ export class Border {
     lineWidth,
   }: {
     latestValue: number;
+    title: string;
     x: number;
     y: number;
     width: number;
@@ -411,6 +415,18 @@ export class Border {
     }
 
     ctx.stroke();
+
+    if (title) {
+      this.drawText({
+        text: title,
+        x: x,
+        y: y + height + 5,
+        fontSize: 20,
+        color,
+        opacity,
+        clearPadding: 4,
+      });
+    }
   }
 
   drawText({

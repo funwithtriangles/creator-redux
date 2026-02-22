@@ -225,6 +225,12 @@ export const trackerParamsConfig = [
 
 export const miniWaveformParamsConfig = [
   {
+    key: "miniWaveform_title",
+    valueType: "string",
+    title: "Title",
+    defaultValue: "",
+  },
+  {
     key: "miniWaveform_latestValue",
     title: "Latest Value",
     defaultValue: 0.5,
