@@ -1,3 +1,18 @@
+export const miniWaveformGeneralParamsConfig = [
+  {
+    key: "miniWaveform_general_pos",
+    title: "Mini Waveform Base Position",
+    valueType: "vector2",
+    defaultValue: [0, 0],
+  },
+  {
+    key: "miniWaveform_general_scale",
+    title: "Mini Waveform Base Scale",
+    defaultValue: 1,
+    sliderMin: 0.1,
+    sliderMax: 2,
+  },
+];
 export const logoParamsConfig = [
   {
     key: "logo_scale",
@@ -337,6 +352,10 @@ export default {
     {
       groupTitle: "Mini Waveform 2",
       params: miniWaveformParamsConfig2,
+    },
+    {
+      groupTitle: "Mini Waveform General",
+      params: miniWaveformGeneralParamsConfig,
     },
     {
       groupTitle: "Logo",

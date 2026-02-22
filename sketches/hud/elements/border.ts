@@ -82,6 +82,8 @@ export class Border {
         height: number;
         drawMode: "line" | "fill";
       }>;
+      miniWaveformScale: number;
+      miniWaveformPos: [number, number];
       logoScale: number;
       logoPos: [number, number];
       canvasWidth: number;
@@ -268,7 +270,12 @@ export class Border {
       });
     }
 
-    if (Array.isArray(p.miniWaveFormItems)) {
+    if (p.miniWaveFormItems) {
+      const baseScale = p.miniWaveformScale;
+      const basePos = p.miniWaveformPos;
+      ctx.save();
+      ctx.translate(basePos[0] * width, basePos[1] * height);
+      ctx.scale(baseScale, baseScale);
       p.miniWaveFormItems.forEach((item, idx) => {
         this.drawMiniWaveform({
           latestValue: item.latestValue,
@@ -279,11 +286,12 @@ export class Border {
           height: item.height * height,
           color: p.color,
           opacity: p.opacity,
-          lineWidth: Math.max(1, bw * 0.5),
+          lineWidth: Math.max(1, bw * 0.5) / baseScale,
           waveformIndex: idx,
           drawMode: item.drawMode,
         });
       });
+      ctx.restore();
     }
 
     this.texture.needsUpdate = true;

@@ -133,6 +133,8 @@ export class Hud {
           height: params[`miniWaveform_height${i}`],
           drawMode: params[`miniWaveform_drawMode${i}`],
         })),
+        miniWaveformPos: params.miniWaveform_general_pos,
+        miniWaveformScale: params.miniWaveform_general_scale,
         canvasWidth: renderer.domElement.width,
         canvasHeight: renderer.domElement.height,
         logoScale: params.logo_scale,
