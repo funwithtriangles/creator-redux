@@ -124,6 +124,7 @@ export class Hud {
         glyphSquareProbability: params.border_glyphSquareProbability,
         glyphTriangleProbability: params.border_glyphTriangleProbability,
         glyphEmptyProbability: params.border_glyphEmptyProbability,
+        glyphTitle: params.border_glyphTitle,
         miniWaveFormItems: new Array(3).fill(0).map((_, i) => ({
           title: params[`miniWaveform_title${i}`],
           latestValue: params[`miniWaveform_latestValue${i}`],

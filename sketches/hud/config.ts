@@ -101,6 +101,12 @@ export const borderParamsConfig = [
 
 export const glyphParamsConfig = [
   {
+    key: "border_glyphTitle",
+    title: "Glyph Title",
+    valueType: "string",
+    defaultValue: "",
+  },
+  {
     key: "border_glyphScale",
     title: "Glyph Scale",
     defaultValue: 1,

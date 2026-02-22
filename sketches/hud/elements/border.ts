@@ -57,6 +57,7 @@ export class Border {
       partTextPos: [number, number];
       trackerTextPos: [number, number];
       trackerLines: number;
+      glyphTitle: string;
       glyphScale: number;
       glyphPos: [number, number];
       glyphTrailCount: number;
@@ -224,6 +225,20 @@ export class Border {
         opacity: p.opacity,
       });
     });
+
+    // Draw glyph title underneath the glyphs if provided
+    if (p.glyphTitle) {
+      const glyphsBottom = glyphY + glyphSize;
+      this.drawText({
+        text: p.glyphTitle,
+        x: glyphX,
+        y: glyphsBottom + 8, // 8px below glyphs
+        fontSize: Math.max(12, Math.round(scale * 0.018)),
+        color: p.color,
+        opacity: p.opacity,
+        clearPadding: 4,
+      });
+    }
 
     if (Array.isArray(p.miniWaveFormItems)) {
       p.miniWaveFormItems.forEach((item, idx) => {
