@@ -70,6 +70,7 @@ export class Border {
         pos: [number, number];
         width: number;
         height: number;
+        drawMode: "line" | "fill";
       }>;
       canvasWidth: number;
       canvasHeight: number;
@@ -237,6 +238,7 @@ export class Border {
           opacity: p.opacity,
           lineWidth: Math.max(1, bw * 0.5),
           waveformIndex: idx,
+          drawMode: item.drawMode,
         });
       });
     }
@@ -372,6 +374,7 @@ export class Border {
     color,
     opacity,
     lineWidth,
+    drawMode,
     waveformIndex = 0,
   }: {
     latestValue: number;
@@ -383,6 +386,7 @@ export class Border {
     color: [number, number, number];
     opacity: number;
     lineWidth: number;
+    drawMode: "line" | "fill";
     waveformIndex?: number;
   }) {
     const w = Math.max(1, Math.round(width));
@@ -423,6 +427,7 @@ export class Border {
       if (i === 0) {
         ctx.moveTo(px, py);
       } else {
+        if (drawMode === "fill") ctx.moveTo(px, y + height / 2);
         ctx.lineTo(px, py);
       }
     }

@@ -258,6 +258,22 @@ function makeMiniWaveformParamsConfig(suffix: string | number) {
       sliderMin: 0,
       sliderMax: 1,
     },
+    {
+      key: `miniWaveform_drawMode${suffix}`,
+      valueType: "enum",
+      title: `Draw Mode ${suffix}`,
+      defaultValue: "fill",
+      options: [
+        {
+          value: "line",
+          label: "Line",
+        },
+        {
+          value: "fill",
+          label: "Fill",
+        },
+      ],
+    },
   ];
 }
 
