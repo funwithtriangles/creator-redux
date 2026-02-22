@@ -223,41 +223,47 @@ export const trackerParamsConfig = [
   },
 ];
 
-export const miniWaveformParamsConfig = [
-  {
-    key: "miniWaveform_title",
-    valueType: "string",
-    title: "Title",
-    defaultValue: "",
-  },
-  {
-    key: "miniWaveform_latestValue",
-    title: "Latest Value",
-    defaultValue: 0.5,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "miniWaveform_pos",
-    title: "Position",
-    valueType: "vector2",
-    defaultValue: [0.05, 0.85],
-  },
-  {
-    key: "miniWaveform_width",
-    title: "Width",
-    defaultValue: 0.35,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-  {
-    key: "miniWaveform_height",
-    title: "Height",
-    defaultValue: 0.1,
-    sliderMin: 0,
-    sliderMax: 1,
-  },
-];
+function makeMiniWaveformParamsConfig(suffix: string | number) {
+  return [
+    {
+      key: `miniWaveform_title${suffix}`,
+      valueType: "string",
+      title: `Title ${suffix}`,
+      defaultValue: "",
+    },
+    {
+      key: `miniWaveform_latestValue${suffix}`,
+      title: `Latest Value ${suffix}`,
+      defaultValue: 0.5,
+      sliderMin: 0,
+      sliderMax: 1,
+    },
+    {
+      key: `miniWaveform_pos${suffix}`,
+      title: `Position ${suffix}`,
+      valueType: "vector2",
+      defaultValue: [0.05, 0.85],
+    },
+    {
+      key: `miniWaveform_width${suffix}`,
+      title: `Width ${suffix}`,
+      defaultValue: 0.35,
+      sliderMin: 0,
+      sliderMax: 1,
+    },
+    {
+      key: `miniWaveform_height${suffix}`,
+      title: `Height ${suffix}`,
+      defaultValue: 0.1,
+      sliderMin: 0,
+      sliderMax: 1,
+    },
+  ];
+}
+
+export const miniWaveformParamsConfig0 = makeMiniWaveformParamsConfig(0);
+export const miniWaveformParamsConfig1 = makeMiniWaveformParamsConfig(1);
+export const miniWaveformParamsConfig2 = makeMiniWaveformParamsConfig(2);
 
 export default {
   title: "HUD",
@@ -284,8 +290,16 @@ export default {
       params: glyphParamsConfig,
     },
     {
-      groupTitle: "Mini Waveform",
-      params: miniWaveformParamsConfig,
+      groupTitle: "Mini Waveform 0",
+      params: miniWaveformParamsConfig0,
+    },
+    {
+      groupTitle: "Mini Waveform 1",
+      params: miniWaveformParamsConfig1,
+    },
+    {
+      groupTitle: "Mini Waveform 2",
+      params: miniWaveformParamsConfig2,
     },
   ],
   shots: [

@@ -17,7 +17,7 @@ export class Border {
   glyphSquareProbability = 0.375;
   glyphTriangleProbability = 0.375;
   glyphEmptyProbability = 0.25;
-  miniWaveformSamples: number[] = [];
+  miniWaveformSamples: Record<number, number[]> = {};
 
   constructor() {
     this.canvas = document.createElement("canvas");
@@ -64,11 +64,13 @@ export class Border {
       glyphSquareProbability: number;
       glyphTriangleProbability: number;
       glyphEmptyProbability: number;
-      miniWaveform_title: string;
-      miniWaveform_latestValue: number;
-      miniWaveform_pos: [number, number];
-      miniWaveform_width: number;
-      miniWaveform_height: number;
+      miniWaveFormItems: Array<{
+        title: string;
+        latestValue: number;
+        pos: [number, number];
+        width: number;
+        height: number;
+      }>;
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -222,17 +224,22 @@ export class Border {
       });
     });
 
-    this.drawMiniWaveform({
-      latestValue: p.miniWaveform_latestValue,
-      title: p.miniWaveform_title,
-      x: p.miniWaveform_pos[0] * width,
-      y: p.miniWaveform_pos[1] * height,
-      width: p.miniWaveform_width * width,
-      height: p.miniWaveform_height * height,
-      color: p.color,
-      opacity: p.opacity,
-      lineWidth: Math.max(1, bw * 0.5),
-    });
+    if (Array.isArray(p.miniWaveFormItems)) {
+      p.miniWaveFormItems.forEach((item, idx) => {
+        this.drawMiniWaveform({
+          latestValue: item.latestValue,
+          title: item.title,
+          x: item.pos[0] * width,
+          y: item.pos[1] * height,
+          width: item.width * width,
+          height: item.height * height,
+          color: p.color,
+          opacity: p.opacity,
+          lineWidth: Math.max(1, bw * 0.5),
+          waveformIndex: idx,
+        });
+      });
+    }
 
     this.texture.needsUpdate = true;
   }
@@ -365,6 +372,7 @@ export class Border {
     color,
     opacity,
     lineWidth,
+    waveformIndex = 0,
   }: {
     latestValue: number;
     title: string;
@@ -375,27 +383,32 @@ export class Border {
     color: [number, number, number];
     opacity: number;
     lineWidth: number;
+    waveformIndex?: number;
   }) {
     const w = Math.max(1, Math.round(width));
     const h = Math.max(1, Math.round(height));
     if (w <= 1 || h <= 1) {
-      this.miniWaveformSamples = [];
+      this.miniWaveformSamples[waveformIndex] = [];
       return;
     }
 
     const sampleCount = Math.max(2, w);
     const clampedValue = Math.min(1, Math.max(0, latestValue));
 
-    this.miniWaveformSamples.push(clampedValue);
-    if (this.miniWaveformSamples.length > sampleCount) {
-      this.miniWaveformSamples = this.miniWaveformSamples.slice(-sampleCount);
+    if (!this.miniWaveformSamples[waveformIndex]) {
+      this.miniWaveformSamples[waveformIndex] = [];
+    }
+    this.miniWaveformSamples[waveformIndex].push(clampedValue);
+    if (this.miniWaveformSamples[waveformIndex].length > sampleCount) {
+      this.miniWaveformSamples[waveformIndex] =
+        this.miniWaveformSamples[waveformIndex].slice(-sampleCount);
     }
 
     const ctx = this.context;
     ctx.strokeStyle = `rgba(${color.map((c) => Math.round(c * 255)).join(", ")}, ${opacity})`;
     ctx.lineWidth = lineWidth;
 
-    const pointCount = this.miniWaveformSamples.length;
+    const pointCount = this.miniWaveformSamples[waveformIndex].length;
     if (pointCount < 2) {
       return;
     }
@@ -403,7 +416,7 @@ export class Border {
     ctx.beginPath();
 
     for (let i = 0; i < pointCount; i++) {
-      const sample = this.miniWaveformSamples[i];
+      const sample = this.miniWaveformSamples[waveformIndex][i];
       const px = x + (i / (sampleCount - 1)) * w;
       const py = y + (1 - sample) * h;
 
