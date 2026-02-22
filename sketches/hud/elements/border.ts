@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import bitesizedFontUrl from "@fontsource/bytesized/files/bytesized-latin-400-normal.woff2";
+import logoUrl from "./logo.svg";
 import { ensureFontInjected } from "./fontUtils";
 
 type GlyphTile =
@@ -19,6 +20,8 @@ export class Border {
   glyphEmptyProbability = 0.25;
   miniWaveformSamples: Record<number, number[]> = {};
 
+  logoImage: HTMLImageElement | null = null;
+
   constructor() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 1920;
@@ -31,6 +34,12 @@ export class Border {
       fontFamily: "Bytesized",
       fontUrl: bitesizedFontUrl,
     });
+
+    // Load logo.svg as an image
+    this.logoImage = new window.Image();
+    this.logoImage.crossOrigin = "anonymous";
+    console.log(logoUrl);
+    this.logoImage.src = logoUrl;
 
     this.newAlienGlyph();
   }
@@ -73,6 +82,8 @@ export class Border {
         height: number;
         drawMode: "line" | "fill";
       }>;
+      logoScale: number;
+      logoPos: [number, number];
       canvasWidth: number;
       canvasHeight: number;
     };
@@ -108,6 +119,23 @@ export class Border {
     }
 
     ctx.clearRect(0, 0, width, height);
+
+    if (this.logoImage && this.logoImage.complete) {
+      // Use params.logo_scale and params.logo_pos
+      const logoScale = typeof p.logoScale === "number" ? p.logoScale : 0.2;
+      const logoPos = Array.isArray(p.logoPos) ? p.logoPos : [0.5, 0.5];
+      const logoH = height * logoScale;
+      const logoW =
+        logoH * (this.logoImage.naturalWidth / this.logoImage.naturalHeight);
+      const logoX = logoPos[0] * width - logoW / 2;
+      const logoY = logoPos[1] * height - logoH / 2;
+
+      ctx.drawImage(this.logoImage, logoX, logoY, logoW, logoH);
+      ctx.globalCompositeOperation = "source-in";
+      ctx.fillStyle = `rgb(${p.color.map((c) => Math.round(c * 255)).join(",")})`;
+      ctx.fillRect(logoX, logoY, logoW, logoH);
+      ctx.globalCompositeOperation = "source-over";
+    }
 
     const scale = Math.max(width, height);
     const pad = p.padding * scale;

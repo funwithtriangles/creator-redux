@@ -135,6 +135,8 @@ export class Hud {
         })),
         canvasWidth: renderer.domElement.width,
         canvasHeight: renderer.domElement.height,
+        logoScale: params.logo_scale,
+        logoPos: params.logo_pos,
       },
     });
 

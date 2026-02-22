@@ -1,3 +1,18 @@
+export const logoParamsConfig = [
+  {
+    key: "logo_scale",
+    title: "Logo Scale",
+    defaultValue: 0.2,
+    sliderMin: 0.05,
+    sliderMax: 1,
+  },
+  {
+    key: "logo_pos",
+    title: "Logo Position",
+    valueType: "vector2",
+    defaultValue: [0.5, 0.5],
+  },
+];
 export const generalParamsConfig = [
   {
     key: "hud_color",
@@ -322,6 +337,10 @@ export default {
     {
       groupTitle: "Mini Waveform 2",
       params: miniWaveformParamsConfig2,
+    },
+    {
+      groupTitle: "Logo",
+      params: logoParamsConfig,
     },
   ],
   shots: [
