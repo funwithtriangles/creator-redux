@@ -4,7 +4,7 @@ import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import config from "./config";
 import { water } from "./water";
 
-export default class Post {
+export default class Water {
   uniforms = convertParamsToUniforms(config.params);
   waveTime = uniform(0);
 
