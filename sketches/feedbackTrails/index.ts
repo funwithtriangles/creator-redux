@@ -1,23 +1,11 @@
-import {
-  Node,
-  RenderTarget,
-  Texture,
-  TextureNode,
-  WebGPURenderer,
-} from "three/webgpu";
-import {
-  convertToTexture,
-  screenUV,
-  uniform,
-  type ShaderNodeObject,
-} from "three/tsl";
+import { Node, WebGPURenderer } from "three/webgpu";
+import { float, max, sign, type ShaderNodeObject } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import config from "./config";
-import { afterImage } from "./afterImage";
+import { pingPong } from "./pingPongNode";
 
 export default class FeedbackTrails {
   uniforms = convertParamsToUniforms(config.params);
-  renderTarget = new RenderTarget(1920, 1080);
   renderer: WebGPURenderer;
 
   constructor({ renderer }) {
@@ -25,11 +13,16 @@ export default class FeedbackTrails {
   }
 
   getWebGPUPass(prevPass: ShaderNodeObject<Node>): ShaderNodeObject<Node> {
-    let p = prevPass;
+    const damp = this.uniforms.intensity;
 
-    const afterImagePass = afterImage(p, 0.8);
+    const feedbackPass = pingPong(prevPass, (texelNew, texelOld) => {
+      const threshold = float(0.1).toConst();
+      const m = max(sign(texelOld.sub(threshold)), 0.0);
+      texelOld.mulAssign(damp.mul(m));
+      return max(texelNew, texelOld);
+    });
 
-    return afterImagePass.getTextureNode();
+    return feedbackPass.getTextureNode();
   }
 
   update({ params, deltaFrame, scene }) {
