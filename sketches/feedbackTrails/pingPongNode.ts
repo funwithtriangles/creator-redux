@@ -21,8 +21,8 @@ import {
 } from "three/tsl";
 
 type ComposeFn = (
-  texelNew: ShaderNodeObject<Node>,
-  texelOld: ShaderNodeObject<Node>,
+  textureNew: ShaderNodeObject<TextureNode>,
+  textureOld: ShaderNodeObject<TextureNode>,
 ) => ShaderNodeObject<Node>;
 
 const _size = /*@__PURE__*/ new Vector2();
@@ -35,7 +35,7 @@ let _rendererState: ReturnType<typeof RendererUtils.resetRendererState>;
  *
  * Manages two render targets that swap each frame, giving you access
  * to both the current input and the previous frame's output. You supply
- * a compose function that receives the sampled texels and returns the
+ * a compose function that receives the two texture nodes and returns the
  * combined result.
  *
  * @augments TempNode
@@ -56,9 +56,9 @@ class PingPongNode extends TempNode {
 
   /**
    * @param textureNode - The input texture node (current frame).
-   * @param composeFn - A function `(texelNew, texelOld) => Node<vec4>` called
-   *   inside a TSL `Fn` context. `texelNew` and `texelOld` are already-sampled
-   *   `vec4` variables you can manipulate and combine.
+   * @param composeFn - A function `(textureNew, textureOld) => Node<vec4>` called
+   *   inside a TSL `Fn` context. `textureNew` is the current frame's texture
+   *   and `textureOld` is the previous frame's texture — sample them however you like.
    */
   constructor(
     textureNode: ShaderNodeObject<TextureNode>,
@@ -131,12 +131,8 @@ class PingPongNode extends TempNode {
 
     textureNodeOld.uvNode = textureNode.uvNode || uv();
 
-    const uvNode = textureNodeOld.uvNode;
-
     const compose = Fn(() => {
-      const texelNew = textureNode.sample(uvNode).toVar();
-      const texelOld = textureNodeOld.sample(uvNode).toVar();
-      return this.composeFn(texelNew, texelOld);
+      return this.composeFn(textureNode, textureNodeOld);
     });
 
     const materialComposed =
@@ -162,8 +158,8 @@ class PingPongNode extends TempNode {
  * Creates a ping-pong feedback node.
  *
  * @param node - The input node (current frame).
- * @param composeFn - `(texelNew, texelOld) => Node<vec4>` — combine the
- *   current frame with the previous frame's output.
+ * @param composeFn - `(textureNew, textureOld) => Node<vec4>` — combine the
+ *   current frame's texture with the previous frame's texture.
  */
 export const pingPong = (node: ShaderNodeObject<Node>, composeFn: ComposeFn) =>
   new PingPongNode(convertToTexture(node), composeFn);

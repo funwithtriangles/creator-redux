@@ -1,5 +1,11 @@
 import { Node, WebGPURenderer } from "three/webgpu";
-import { float, max, sign, type ShaderNodeObject } from "three/tsl";
+import {
+  float,
+  mix,
+  rotateUV,
+  screenUV,
+  type ShaderNodeObject,
+} from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import config from "./config";
 import { pingPong } from "./pingPongNode";
@@ -13,13 +19,19 @@ export default class FeedbackTrails {
   }
 
   getWebGPUPass(prevPass: ShaderNodeObject<Node>): ShaderNodeObject<Node> {
-    const damp = this.uniforms.intensity;
+    const { rotAngle, scale, mixAmp } = this.uniforms;
 
-    const feedbackPass = pingPong(prevPass, (texelNew, texelOld) => {
-      const threshold = float(0.1).toConst();
-      const m = max(sign(texelOld.sub(threshold)), 0.0);
-      texelOld.mulAssign(damp.mul(m));
-      return max(texelNew, texelOld);
+    const feedbackPass = pingPong(prevPass, (textureNew, textureOld) => {
+      // Rotate and scale UVs for the old (feedback) texture
+      const rotated = rotateUV(screenUV, rotAngle.mul(0.1)).toVar();
+      rotated.subAssign(0.5);
+      rotated.divAssign(float(1).add(scale.mul(0.5)));
+      rotated.addAssign(0.5);
+
+      const texelNew = textureNew.sample(screenUV).toVar();
+      const texelOld = textureOld.sample(rotated).toVar();
+
+      return mix(texelNew, texelOld, mixAmp);
     });
 
     return feedbackPass.getTextureNode();

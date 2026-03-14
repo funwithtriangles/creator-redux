@@ -16,5 +16,26 @@ export default {
       sliderMin: 0,
       sliderMax: 0.01,
     },
+    {
+      title: "rotAngle",
+      key: "rotAngle",
+      defaultValue: 0,
+      sliderMin: -0.1,
+      sliderMax: 0.1,
+    },
+    {
+      title: "scale",
+      key: "scale",
+      defaultValue: 0,
+      sliderMin: -0.1,
+      sliderMax: 0.1,
+    },
+    {
+      title: "mixAmp",
+      key: "mixAmp",
+      defaultValue: 0.5,
+      sliderMin: 0,
+      sliderMax: 1,
+    },
   ],
 };
