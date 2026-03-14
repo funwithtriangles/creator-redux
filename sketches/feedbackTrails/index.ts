@@ -1,6 +1,9 @@
 import { Node, PassNode, WebGPURenderer } from "three/webgpu";
 import {
+  depth,
   float,
+  max,
+  min,
   mix,
   mrt,
   output,
@@ -50,7 +53,10 @@ export default class FeedbackTrails {
       return mix(trail, texelNew, mask);
     });
 
-    return feedbackPass.getTextureNode();
+    const feedbackTex = feedbackPass.getTextureNode();
+
+    // Overlay full scene on top so all objects are visible
+    return mix(feedbackTex, prevPass, feedbackTex.a.oneMinus());
   }
 
   update({ params, deltaFrame, scene }) {
