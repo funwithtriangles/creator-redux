@@ -35,6 +35,13 @@ export const generalParamsConfig = [
     valueType: "rgb",
     defaultValue: [1, 1, 1],
   },
+  {
+    key: "hud_opacity",
+    title: "HUD Opacity",
+    defaultValue: 1,
+    sliderMin: 0,
+    sliderMax: 1,
+  },
 ];
 
 export const borderParamsConfig = [

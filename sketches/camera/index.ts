@@ -34,18 +34,20 @@ export default class Camera {
   currentMode: "orbit" | "closeUp" = "orbit";
   isFirstFrame = true;
 
-  constructor({ camera, scene }: CameraConstructorParams) {
+  constructor(params: CameraConstructorParams) {
     this.root = new THREE.Group();
-    this.scene = scene;
-    this.scene.add(camera);
+    this.scene = params.scene;
+    this.scene.add(params.camera);
 
-    this.camera = camera;
+    params.camera = new THREE.OrthographicCamera();
+
+    this.camera = params.camera;
     this.camera.near = 0.0001;
     this.lookAtPos = new THREE.Vector3();
 
     // Hack to position cameras on JBoys head
     setTimeout(() => {
-      const item = scene.getObjectByName("mixamorigHead");
+      const item = params.scene.getObjectByName("mixamorigHead");
       if (item) {
         this.head = item;
       }

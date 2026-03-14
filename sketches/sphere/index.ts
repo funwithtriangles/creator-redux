@@ -11,7 +11,7 @@ import { stripesUniforms, stripesParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 
 const SPHERE_COUNT = 100;
-const SPREAD = new Vector3(20, 20, 100);
+const SPREAD = new Vector3(20, 20, 30);
 const DEADZONE = new Vector3(6, 6, 6);
 
 function isInDeadzone(pos: Vector3): boolean {

@@ -81,7 +81,11 @@ export class Hud {
 
     // Tint entire HUD with color
     const hudColor = uniforms.hud_color;
-    p = mix(input, p.mul(hudColor), step(float(0.001), p.sub(input).length()));
+    p = mix(
+      input,
+      p.mul(hudColor),
+      step(float(0.001), p.sub(input).length().mul(uniforms.hud_opacity)),
+    );
 
     return p;
   }
