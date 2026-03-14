@@ -5,26 +5,19 @@ import {
   DirectionalLight,
   Group,
   Object3D,
-  MeshStandardNodeMaterial,
   Mesh,
-  MeshPhysicalNodeMaterial,
-  Uniform,
-  UniformNode,
-  MeshBasicMaterial,
   MeshBasicNodeMaterial,
-  MeshPhongNodeMaterial,
-  DoubleSide,
-  PointLight,
-  MeshNormalMaterial,
+  Node,
+  PassNode,
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
-import matcapUrl from "./matcap.jpg";
 
 import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 // import { caustics } from "./caustics";
-import { float, uniform } from "three/tsl";
+import { float, mrt, output, ShaderNodeObject, uniform } from "three/tsl";
 import { stripes } from "./stripes";
+import { retarget } from "three/examples/jsm/utils/SkeletonUtils.js";
 
 const gltfLoader = new GLTFLoader();
 const textureLoader = new TextureLoader();
@@ -62,29 +55,12 @@ export default class Creator {
       // map: matcapMat.matcap,
     });
 
-    // const objectMaterial = new MeshStandardNodeMaterial({
-    //   roughness: 0,
-    //   metalness: 1,
-    //   // transparent: true,
-    //   // side: DoubleSide,
-    // });
-
-    // const objectMaterial = new MeshNormalMaterial();
-
-    // objectMaterial.opacityNode = wavesNode;
-
     objectMaterial.emissiveNode = wavesNode;
-    // const causticsNode = caustics({ ...this.uniforms })();
 
-    // objectMaterial.colorNode = causticsNode;
-    // objectMaterial.iridescenceNode = causticsNode
-    //   // .oneMinus()
-    //   .mul(this.uniforms.iridescence);
-
-    // objectMaterial.iridescenceIORNode = this.uniforms.iridescenceIOR;
+    // Write to the MRT mask channel so post-processing can identify this geometry
+    objectMaterial.mrtNode = mrt({ mask: float(1) });
 
     this.root.add(light1);
-    // this.root.add(light2);
 
     gltfLoader.load(glbUrl, (obj) => {
       this.group = obj.scene;
@@ -97,12 +73,21 @@ export default class Creator {
           this.pieces.push(child);
         }
       });
-
-      // textureLoader.load(matcapUrl, (matcap) => {
-      //   matcapMat.matcap = matcap;
-      //   matcapMat.needsUpdate = true;
-      // });
     });
+  }
+
+  getWebGPUPass(
+    prevPass: ShaderNodeObject<Node>,
+    renderPassNode: ShaderNodeObject<PassNode>,
+  ): ShaderNodeObject<Node> {
+    renderPassNode.setMRT(
+      mrt({
+        output,
+        mask: float(0),
+      }),
+    );
+
+    return prevPass;
   }
 
   update({ params: p, deltaFrame: d }) {

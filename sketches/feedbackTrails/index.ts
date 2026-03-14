@@ -1,9 +1,12 @@
-import { Node, WebGPURenderer } from "three/webgpu";
+import { Node, PassNode, WebGPURenderer } from "three/webgpu";
 import {
   float,
   mix,
+  mrt,
+  output,
   rotateUV,
   screenUV,
+  vec4,
   type ShaderNodeObject,
 } from "three/tsl";
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
@@ -18,8 +21,13 @@ export default class FeedbackTrails {
     this.renderer = renderer;
   }
 
-  getWebGPUPass(prevPass: ShaderNodeObject<Node>): ShaderNodeObject<Node> {
+  getWebGPUPass(
+    prevPass: ShaderNodeObject<Node>,
+    renderPassNode: ShaderNodeObject<PassNode>,
+  ): ShaderNodeObject<Node> {
     const { rotAngle, scale, mixAmp, direction } = this.uniforms;
+
+    const maskTexture = renderPassNode.getTextureNode("mask");
 
     const feedbackPass = pingPong(prevPass, (textureNew, textureOld) => {
       // Rotate, scale, and offset UVs for the old (feedback) texture
@@ -31,8 +39,15 @@ export default class FeedbackTrails {
 
       const texelNew = textureNew.sample(screenUV).toVar();
       const texelOld = textureOld.sample(rotated).toVar();
+      const mask = maskTexture.sample(screenUV).r;
 
-      return mix(texelNew, texelOld, mixAmp);
+      // Only write masked geometry pixels into the feedback buffer
+      const maskedNew = mix(vec4(0), texelNew, mask);
+
+      // Blend feedback trail behind the geometry (where mask is 0),
+      // show the original scene on top (where mask is 1)
+      const trail = mix(maskedNew, texelOld, mixAmp);
+      return mix(trail, texelNew, mask);
     });
 
     return feedbackPass.getTextureNode();
