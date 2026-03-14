@@ -15,8 +15,26 @@ import glbUrl from "./creator.glb";
 import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 // import { caustics } from "./caustics";
-import { float, mrt, output, ShaderNodeObject, uniform } from "three/tsl";
+import {
+  dot,
+  float,
+  mix,
+  mrt,
+  mx_noise_float,
+  output,
+  positionGeometry,
+  positionLocal,
+  ShaderNodeObject,
+  smoothstep,
+  uniform,
+  vec3,
+} from "three/tsl";
 import { stripes } from "./stripes";
+import {
+  wireframeAlphaFloat,
+  wireframeEmissiveColor,
+  setupTriCenterAttributes,
+} from "../hud/elements/wireframe";
 import { retarget } from "three/examples/jsm/utils/SkeletonUtils.js";
 
 const gltfLoader = new GLTFLoader();
@@ -44,18 +62,51 @@ export default class Creator {
     marbleTime: uniform(0),
     stripeTime: uniform(0),
     warpNoiseTime: uniform(0),
+    wireNoiseTime: uniform(0),
   };
 
   constructor() {
     const wavesNode = stripes({ ...this.uniforms })();
-    const objectMaterial = new MeshBasicNodeMaterial({
-      color: 0xffffff,
-      // flatShading: true,
-      // specular: 0xffffff,
-      // map: matcapMat.matcap,
+    const wireAlpha = wireframeAlphaFloat({
+      thickness: this.uniforms.wireframeThickness,
+    });
+    const wireColor = wireframeEmissiveColor({
+      wireframeFrontColor: this.uniforms.wireframeFrontColor,
+      wireframeBackColor: this.uniforms.wireframeBackColor,
     });
 
-    objectMaterial.emissiveNode = wavesNode;
+    const wireNoiseCoord = dot(
+      positionLocal,
+      vec3(
+        this.uniforms.wireNoiseDirX,
+        this.uniforms.wireNoiseDirY,
+        this.uniforms.wireNoiseDirZ,
+      ),
+    )
+      .mul(this.uniforms.wireNoiseScale)
+      .add(this.uniforms.wireNoiseTime);
+
+    const wireNoiseRaw = mx_noise_float(wireNoiseCoord)
+      .add(0.5)
+      .add(this.uniforms.wireNoiseBias);
+
+    const edge = this.uniforms.wireNoiseHardness;
+    const wireNoise = smoothstep(
+      float(0.5).sub(edge),
+      float(0.5).add(edge),
+      wireNoiseRaw,
+    );
+
+    const objectMaterial = new MeshBasicNodeMaterial({
+      color: 0xffffff,
+      side: 2, // DoubleSide
+    });
+
+    const wireframeCol = (objectMaterial.emissiveNode = mix(
+      wavesNode,
+      wireColor,
+      wireAlpha.mul(wireNoise).mul(this.uniforms.wireframeOpacity),
+    ));
 
     // Write to the MRT mask channel so post-processing can identify this geometry
     objectMaterial.mrtNode = mrt({ mask: float(1) });
@@ -68,6 +119,7 @@ export default class Creator {
 
       obj.scene.traverse((child) => {
         if (child instanceof Mesh) {
+          child.geometry = setupTriCenterAttributes(child.geometry);
           child.material = objectMaterial;
 
           this.pieces.push(child);
@@ -101,6 +153,9 @@ export default class Creator {
 
     this.uniforms.warpNoiseTime.value +=
       d * this.uniforms.warpNoiseSpeed.value * 0.01;
+
+    this.uniforms.wireNoiseTime.value +=
+      d * this.uniforms.wireNoiseSpeed.value * 0.01;
 
     // Modulate scale of each piece
     this.time += d * 0.05 * p.pieceScaleSpeed;

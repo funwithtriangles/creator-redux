@@ -194,6 +194,75 @@ export const uniformsParamsConfig = [
     ],
   },
   {
+    groupTitle: "Wireframe",
+    params: [
+      {
+        key: "wireframeThickness",
+        defaultValue: 1.5,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+      {
+        key: "wireframeOpacity",
+        defaultValue: 1,
+        sliderMin: 0,
+        sliderMax: 1,
+      },
+      {
+        key: "wireframeFrontColor",
+        defaultValue: [1, 1, 1],
+        valueType: "rgb",
+      },
+      {
+        key: "wireframeBackColor",
+        defaultValue: [0.53, 0.53, 0.53],
+        valueType: "rgb",
+      },
+      {
+        key: "wireNoiseScale",
+        defaultValue: 2,
+        sliderMin: 0.1,
+        sliderMax: 10,
+      },
+      {
+        key: "wireNoiseSpeed",
+        defaultValue: 0.5,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+      {
+        key: "wireNoiseBias",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "wireNoiseHardness",
+        defaultValue: 0.5,
+        sliderMin: 0.01,
+        sliderMax: 0.5,
+      },
+      {
+        key: "wireNoiseDirX",
+        defaultValue: 1,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "wireNoiseDirY",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "wireNoiseDirZ",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+    ],
+  },
+  {
     groupTitle: "Pieces",
     params: [
       {
