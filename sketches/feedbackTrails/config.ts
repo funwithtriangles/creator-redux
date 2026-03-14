@@ -37,5 +37,11 @@ export default {
       sliderMin: 0,
       sliderMax: 1,
     },
+    {
+      title: "direction",
+      key: "direction",
+      defaultValue: [0, 0],
+      valueType: "vector2",
+    },
   ],
 };

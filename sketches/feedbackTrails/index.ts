@@ -19,14 +19,15 @@ export default class FeedbackTrails {
   }
 
   getWebGPUPass(prevPass: ShaderNodeObject<Node>): ShaderNodeObject<Node> {
-    const { rotAngle, scale, mixAmp } = this.uniforms;
+    const { rotAngle, scale, mixAmp, direction } = this.uniforms;
 
     const feedbackPass = pingPong(prevPass, (textureNew, textureOld) => {
-      // Rotate and scale UVs for the old (feedback) texture
+      // Rotate, scale, and offset UVs for the old (feedback) texture
       const rotated = rotateUV(screenUV, rotAngle.mul(0.1)).toVar();
       rotated.subAssign(0.5);
       rotated.divAssign(float(1).add(scale.mul(0.5)));
       rotated.addAssign(0.5);
+      rotated.addAssign(direction.sub(0.5));
 
       const texelNew = textureNew.sample(screenUV).toVar();
       const texelOld = textureOld.sample(rotated).toVar();
