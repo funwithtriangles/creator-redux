@@ -26,7 +26,12 @@ export const stripesParamsConfig = [
       { key: "phaseBNoiseMult", defaultValue: 0.4, sliderMin: 0, sliderMax: 1 },
       { key: "shineIntensity", defaultValue: 0.5, sliderMin: 0, sliderMax: 2 },
       { key: "shinePower", defaultValue: 2, sliderMin: 0.1, sliderMax: 10 },
-      { key: "frostedEdgeIntensity", defaultValue: 0, sliderMin: 0, sliderMax: 2 },
+      {
+        key: "frostedEdgeIntensity",
+        defaultValue: 0,
+        sliderMin: 0,
+        sliderMax: 2,
+      },
       { key: "rimPower", defaultValue: 2, sliderMin: 0.1, sliderMax: 10 },
     ],
   },
