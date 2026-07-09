@@ -6,13 +6,6 @@ export default {
       groupTitle: "Swarm",
       params: [
         {
-          key: "cylinderRadius",
-          title: "Cylinder Radius",
-          defaultValue: 2,
-          sliderMin: 0.2,
-          sliderMax: 8,
-        },
-        {
           key: "grubSpacingX",
           title: "Grub Spacing X",
           defaultValue: 10,
@@ -22,6 +15,34 @@ export default {
         {
           key: "groupScale",
           title: "Group Scale",
+          defaultValue: 1,
+          sliderMin: 0.1,
+          sliderMax: 5,
+        },
+        {
+          key: "rowStagger",
+          title: "Row Stagger",
+          defaultValue: 1,
+          sliderMin: 0.1,
+          sliderMax: 5,
+        },
+        {
+          key: "rowStaggerFreq",
+          title: "Row Stagger Frequency",
+          defaultValue: 1,
+          sliderMin: 0.1,
+          sliderMax: 5,
+        },
+        {
+          key: "cylinderRadius",
+          title: "Cylinder Radius",
+          defaultValue: 2,
+          sliderMin: 0.2,
+          sliderMax: 8,
+        },
+        {
+          key: "cylinderRotSpeed",
+          title: "Cylinder Rotation Speed",
           defaultValue: 1,
           sliderMin: 0.1,
           sliderMax: 5,

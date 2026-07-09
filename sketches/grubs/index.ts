@@ -10,7 +10,7 @@ import {
 
 const SEGMENT_COUNT = 24;
 const ROW_COUNT = 24;
-const GRUBS_PER_ROW = 6;
+const GRUBS_PER_ROW = 12;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
 
@@ -27,6 +27,7 @@ interface Segment {
 
 export default class Grubs {
   root = new Group();
+  cylinder = new Group();
   segments: Segment[] = [];
   time = 0;
   squirmTime = 0;
@@ -47,7 +48,8 @@ export default class Grubs {
     this.headMesh = new InstancedMesh(geometry, headMat, headCount);
     this.bodyMesh = new InstancedMesh(geometry, this.bodyMat, bodyCount);
 
-    this.root.add(this.headMesh, this.bodyMesh);
+    this.cylinder.add(this.headMesh, this.bodyMesh);
+    this.root.add(this.cylinder);
 
     let headInstanceIndex = 0;
     let bodyInstanceIndex = 0;
@@ -132,8 +134,11 @@ export default class Grubs {
       const rowCenterY = Math.sin(rowIndex * rowArc) * p.cylinderRadius;
       const rowCenterZ = Math.cos(rowIndex * rowArc) * p.cylinderRadius;
 
+      const stagger =
+        p.rowStagger * Math.sin(rowIndex * p.rowStaggerFreq) * direction;
+
       const grubOffsetX =
-        (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX;
+        (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX + stagger;
       const xRaw =
         this.time * direction -
         segmentIndex * p.segSpacing * direction +
@@ -163,5 +168,6 @@ export default class Grubs {
 
     this.headMesh.instanceMatrix.needsUpdate = true;
     this.bodyMesh.instanceMatrix.needsUpdate = true;
+    this.cylinder.rotation.x += p.cylinderRotSpeed * 0.01;
   }
 }
