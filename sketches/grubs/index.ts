@@ -98,7 +98,7 @@ export default class Grubs {
       const t = segmentIndex / SEGMENT_COUNT;
       const pulsePhase =
         this.pulseTime -
-        segmentIndex * p.spacing * p.pulseFreq +
+        segmentIndex * p.segSpacing * p.pulseFreq +
         rowIndex +
         grubIndex;
 
@@ -107,14 +107,14 @@ export default class Grubs {
         (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX;
       const xRaw =
         this.time * direction -
-        segmentIndex * p.spacing * direction +
+        segmentIndex * p.segSpacing * direction +
         grubOffsetX;
 
       const x =
         ((((xRaw + wrapLimit * 2) % wrapSpan) + wrapSpan) % wrapSpan) -
         wrapLimit;
       const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
-      const z = 0;
+      const z = Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
 
       mesh.position.set(x, y, z);
 
@@ -123,7 +123,7 @@ export default class Grubs {
       const headTaper = 1 - (1 - t) * p.headTaper;
       const radius = Math.max(
         0.05,
-        p.baseScale * tailTaper * headTaper * (1 + pulseWave * p.pulseAmp),
+        p.segScale * tailTaper * headTaper * (1 + pulseWave * p.pulseAmp),
       );
 
       mesh.scale.setScalar(radius);
