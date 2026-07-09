@@ -17,6 +17,20 @@ export default {
       sliderMax: 0.1,
     },
     {
+      key: "rowSpacing",
+      title: "Row Spacing",
+      defaultValue: 2,
+      sliderMin: 0.2,
+      sliderMax: 8,
+    },
+    {
+      key: "grubSpacingX",
+      title: "Grub Spacing X",
+      defaultValue: 10,
+      sliderMin: 0.5,
+      sliderMax: 40,
+    },
+    {
       key: "baseScale",
       title: "Base Scale",
       defaultValue: 0.6,

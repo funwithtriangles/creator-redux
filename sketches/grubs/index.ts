@@ -8,12 +8,17 @@ import {
 } from "three/webgpu";
 
 const SEGMENT_COUNT = 24;
+const ROW_COUNT = 6;
+const GRUBS_PER_ROW = 3;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
 
 interface Segment {
   mesh: Mesh;
-  index: number;
+  segmentIndex: number;
+  rowIndex: number;
+  grubIndex: number;
+  direction: number;
 }
 
 export default class Grubs {
@@ -30,11 +35,29 @@ export default class Grubs {
     this.bodyMat = new MeshMatcapMaterial();
     const headMat = new MeshBasicMaterial();
 
-    for (let i = 0; i < SEGMENT_COUNT; i++) {
-      const mat = i === 0 ? headMat : this.bodyMat;
-      const mesh = new Mesh(geometry, mat);
-      this.segments.push({ mesh, index: i });
-      this.root.add(mesh);
+    for (let rowIndex = 0; rowIndex < ROW_COUNT; rowIndex++) {
+      const direction = rowIndex % 2 === 0 ? 1 : -1;
+
+      for (let grubIndex = 0; grubIndex < GRUBS_PER_ROW; grubIndex++) {
+        for (
+          let segmentIndex = 0;
+          segmentIndex < SEGMENT_COUNT;
+          segmentIndex++
+        ) {
+          const mat = segmentIndex === 0 ? headMat : this.bodyMat;
+          const mesh = new Mesh(geometry, mat);
+
+          this.segments.push({
+            mesh,
+            segmentIndex,
+            rowIndex,
+            grubIndex,
+            direction,
+          });
+
+          this.root.add(mesh);
+        }
+      }
     }
   }
 
@@ -48,11 +71,9 @@ export default class Grubs {
     // TODO: We wouldn't need to check every frame if we had some sketch api for reacting to param changes
     if (p.matcapFileName && p.matcapFileName !== this.lastMatCapUrl) {
       this.lastMatCapUrl = p.matcapFileName;
-      console.log(p.matcapFileName);
       textureLoader.load(
         p.matcapFileName,
         (matcap) => {
-          console.log(matcap);
           this.bodyMat.matcap = matcap;
           this.bodyMat.needsUpdate = true;
         },
@@ -69,18 +90,30 @@ export default class Grubs {
     this.squirmTime += delta;
     this.pulseTime += delta;
 
-    const wrapSpan = p.xWrapLimit * 2;
+    const wrapSpan = p.grubSpacingX * GRUBS_PER_ROW;
+    const wrapLimit = wrapSpan * 0.5;
 
-    for (const { mesh, index } of this.segments) {
-      const t = index / Math.max(1, SEGMENT_COUNT - 1);
-      const squirmPhase = this.squirmTime - index * p.spacing * p.squirmFreq;
-      const pulsePhase = this.pulseTime - index * p.spacing * p.pulseFreq;
-      const xRaw = this.time - index * p.spacing;
+    for (const { mesh, segmentIndex, rowIndex, grubIndex, direction } of this
+      .segments) {
+      const t = segmentIndex / SEGMENT_COUNT;
+      const pulsePhase =
+        this.pulseTime -
+        segmentIndex * p.spacing * p.pulseFreq +
+        rowIndex +
+        grubIndex;
+
+      const rowCenterY = (rowIndex - (ROW_COUNT - 1) * 0.5) * p.rowSpacing;
+      const grubOffsetX =
+        (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX;
+      const xRaw =
+        this.time * direction -
+        segmentIndex * p.spacing * direction +
+        grubOffsetX;
 
       const x =
-        ((((xRaw + p.xWrapLimit) % wrapSpan) + wrapSpan) % wrapSpan) -
-        p.xWrapLimit;
-      const y = Math.cos(squirmPhase) * p.squirmAmpY;
+        ((((xRaw + wrapLimit * 2) % wrapSpan) + wrapSpan) % wrapSpan) -
+        wrapLimit;
+      const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
       const z = 0;
 
       mesh.position.set(x, y, z);
