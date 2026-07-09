@@ -1,8 +1,9 @@
 import {
+  InstancedMesh,
   Group,
-  Mesh,
   MeshBasicMaterial,
   MeshMatcapMaterial,
+  Object3D,
   SphereGeometry,
   TextureLoader,
 } from "three/webgpu";
@@ -16,11 +17,12 @@ const textureLoader = new TextureLoader();
 const TAU = Math.PI * 2;
 
 interface Segment {
-  mesh: Mesh;
   segmentIndex: number;
   rowIndex: number;
   grubIndex: number;
   direction: number;
+  instanceIndex: number;
+  isHead: boolean;
 }
 
 export default class Grubs {
@@ -30,12 +32,25 @@ export default class Grubs {
   squirmTime = 0;
   pulseTime = 0;
   lastMatCapUrl?: string;
+  headMesh: InstancedMesh;
   bodyMat: MeshMatcapMaterial;
+  bodyMesh: InstancedMesh;
+  instanceHelper = new Object3D();
 
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
-    this.bodyMat = new MeshMatcapMaterial();
     const headMat = new MeshBasicMaterial();
+    this.bodyMat = new MeshMatcapMaterial();
+    const headCount = ROW_COUNT * GRUBS_PER_ROW;
+    const bodyCount = ROW_COUNT * GRUBS_PER_ROW * (SEGMENT_COUNT - 1);
+
+    this.headMesh = new InstancedMesh(geometry, headMat, headCount);
+    this.bodyMesh = new InstancedMesh(geometry, this.bodyMat, bodyCount);
+
+    this.root.add(this.headMesh, this.bodyMesh);
+
+    let headInstanceIndex = 0;
+    let bodyInstanceIndex = 0;
 
     for (let rowIndex = 0; rowIndex < ROW_COUNT; rowIndex++) {
       const direction = rowIndex % 2 === 0 ? 1 : -1;
@@ -47,17 +62,19 @@ export default class Grubs {
           segmentIndex++
         ) {
           const mat = segmentIndex === 0 ? headMat : this.bodyMat;
-          const mesh = new Mesh(geometry, mat);
+          const isHead = segmentIndex === 0;
+          const instanceIndex = isHead
+            ? headInstanceIndex++
+            : bodyInstanceIndex++;
 
           this.segments.push({
-            mesh,
             segmentIndex,
             rowIndex,
             grubIndex,
             direction,
+            instanceIndex,
+            isHead,
           });
-
-          this.root.add(mesh);
         }
       }
     }
@@ -97,8 +114,14 @@ export default class Grubs {
 
     const rowArc = TAU / ROW_COUNT;
 
-    for (const { mesh, segmentIndex, rowIndex, grubIndex, direction } of this
-      .segments) {
+    for (const {
+      segmentIndex,
+      rowIndex,
+      grubIndex,
+      direction,
+      instanceIndex,
+      isHead,
+    } of this.segments) {
       const t = segmentIndex / SEGMENT_COUNT;
       const pulsePhase =
         this.pulseTime -
@@ -122,8 +145,6 @@ export default class Grubs {
       const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
       const z = rowCenterZ + Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
 
-      mesh.position.set(x, y, z);
-
       const pulseWave = Math.sin(pulsePhase);
       const tailTaper = 1 - t * p.tailTaper;
       const headTaper = 1 - (1 - t) * p.headTaper;
@@ -132,7 +153,15 @@ export default class Grubs {
         p.segScale * tailTaper * headTaper * (1 + pulseWave * p.pulseAmp),
       );
 
-      mesh.scale.setScalar(radius);
+      this.instanceHelper.position.set(x, y, z);
+      this.instanceHelper.scale.setScalar(radius);
+      this.instanceHelper.updateMatrix();
+
+      const mesh = isHead ? this.headMesh : this.bodyMesh;
+      mesh.setMatrixAt(instanceIndex, this.instanceHelper.matrix);
     }
+
+    this.headMesh.instanceMatrix.needsUpdate = true;
+    this.bodyMesh.instanceMatrix.needsUpdate = true;
   }
 }
