@@ -8,10 +8,12 @@ import {
 } from "three/webgpu";
 
 const SEGMENT_COUNT = 24;
-const ROW_COUNT = 6;
-const GRUBS_PER_ROW = 3;
+const ROW_COUNT = 24;
+const GRUBS_PER_ROW = 6;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
+
+const TAU = Math.PI * 2;
 
 interface Segment {
   mesh: Mesh;
@@ -93,6 +95,8 @@ export default class Grubs {
     const wrapSpan = p.grubSpacingX * GRUBS_PER_ROW;
     const wrapLimit = wrapSpan * 0.5;
 
+    const rowArc = TAU / ROW_COUNT;
+
     for (const { mesh, segmentIndex, rowIndex, grubIndex, direction } of this
       .segments) {
       const t = segmentIndex / SEGMENT_COUNT;
@@ -102,7 +106,9 @@ export default class Grubs {
         rowIndex +
         grubIndex;
 
-      const rowCenterY = (rowIndex - (ROW_COUNT - 1) * 0.5) * p.rowSpacing;
+      const rowCenterY = Math.sin(rowIndex * rowArc) * p.cylinderRadius;
+      const rowCenterZ = Math.cos(rowIndex * rowArc) * p.cylinderRadius;
+
       const grubOffsetX =
         (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX;
       const xRaw =
@@ -114,7 +120,7 @@ export default class Grubs {
         ((((xRaw + wrapLimit * 2) % wrapSpan) + wrapSpan) % wrapSpan) -
         wrapLimit;
       const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
-      const z = Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
+      const z = rowCenterZ + Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
 
       mesh.position.set(x, y, z);
 

@@ -6,8 +6,8 @@ export default {
       groupTitle: "Swarm",
       params: [
         {
-          key: "rowSpacing",
-          title: "Row Spacing",
+          key: "cylinderRadius",
+          title: "Cylinder Radius",
           defaultValue: 2,
           sliderMin: 0.2,
           sliderMax: 8,
