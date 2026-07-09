@@ -59,13 +59,6 @@ export default {
       sliderMax: 15,
     },
     {
-      key: "pulseTravel",
-      title: "Pulse Travel",
-      defaultValue: 0.8,
-      sliderMin: 0,
-      sliderMax: 3,
-    },
-    {
       key: "squirmAmpY",
       title: "Squirm Amp Y",
       defaultValue: 0.5,
@@ -85,6 +78,13 @@ export default {
       defaultValue: 20,
       sliderMin: 1,
       sliderMax: 100,
+    },
+    {
+      key: "matcapFileName",
+      valueType: "file",
+      title: "Matcap Texture",
+      defaultValue: null,
+      accept: ["image/*"],
     },
   ],
 };

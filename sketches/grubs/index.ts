@@ -1,8 +1,15 @@
-import { Group, Mesh, MeshNormalMaterial, SphereGeometry } from "three/webgpu";
-import config from "./config";
+import {
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshMatcapMaterial,
+  SphereGeometry,
+  TextureLoader,
+} from "three/webgpu";
 
 const SEGMENT_COUNT = 24;
 const sphereDetail = 20;
+const textureLoader = new TextureLoader();
 
 interface Segment {
   mesh: Mesh;
@@ -15,13 +22,17 @@ export default class Grubs {
   time = 0;
   squirmTime = 0;
   pulseTime = 0;
+  lastMatCapUrl?: string;
+  bodyMat: MeshMatcapMaterial;
 
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
-    const material = new MeshNormalMaterial();
+    this.bodyMat = new MeshMatcapMaterial();
+    const headMat = new MeshBasicMaterial();
 
     for (let i = 0; i < SEGMENT_COUNT; i++) {
-      const mesh = new Mesh(geometry, material);
+      const mat = i === 0 ? headMat : this.bodyMat;
+      const mesh = new Mesh(geometry, mat);
       this.segments.push({ mesh, index: i });
       this.root.add(mesh);
     }
@@ -31,9 +42,27 @@ export default class Grubs {
     params: p,
     deltaFrame,
   }: {
-    params: Record<string, number>;
+    params: Record<string, any>;
     deltaFrame: number;
   }) {
+    // TODO: We wouldn't need to check every frame if we had some sketch api for reacting to param changes
+    if (p.matcapFileName && p.matcapFileName !== this.lastMatCapUrl) {
+      this.lastMatCapUrl = p.matcapFileName;
+      console.log(p.matcapFileName);
+      textureLoader.load(
+        p.matcapFileName,
+        (matcap) => {
+          console.log(matcap);
+          this.bodyMat.matcap = matcap;
+          this.bodyMat.needsUpdate = true;
+        },
+        undefined,
+        (err) => {
+          console.error("Failed to load matcap texture:", err);
+        },
+      );
+    }
+
     this.root.scale.setScalar(p.groupScale);
     const delta = deltaFrame * 0.01 * p.speed;
     this.time += delta;
@@ -45,6 +74,7 @@ export default class Grubs {
     for (const { mesh, index } of this.segments) {
       const t = index / Math.max(1, SEGMENT_COUNT - 1);
       const squirmPhase = this.squirmTime - index * p.spacing * p.squirmFreq;
+      const pulsePhase = this.pulseTime - index * p.spacing * p.pulseFreq;
       const xRaw = this.time - index * p.spacing;
 
       const x =
@@ -55,7 +85,7 @@ export default class Grubs {
 
       mesh.position.set(x, y, z);
 
-      const pulseWave = Math.sin(this.pulseTime - index * p.pulseTravel);
+      const pulseWave = Math.sin(pulsePhase);
       const tailTaper = 1 - t * p.tailTaper;
       const headTaper = 1 - (1 - t) * p.headTaper;
       const radius = Math.max(
