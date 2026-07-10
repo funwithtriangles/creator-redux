@@ -11,7 +11,7 @@ import {
 const SEGMENT_COUNT = 24;
 const ROW_COUNT = 48;
 const GRUBS_PER_ROW = 12;
-const PARAM_SMOOTHING = 0.85;
+const PARAM_SMOOTHING = 0.95;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
 
@@ -140,7 +140,15 @@ export default class Grubs {
     const wrapSpan = this.smoothedGrubSpacingX * GRUBS_PER_ROW;
     const wrapLimit = wrapSpan * 0.5;
 
-    this.time += delta;
+    // Keep world-space travel speed stable as squirm frequency changes.
+    const squirmDyDxAmp = this.smoothedSquirmFreq * p.squirmAmpY;
+    const squirmDzDxAmp = this.smoothedSquirmFreq * p.squirmAmpZ;
+    const avgPathStretch = Math.sqrt(
+      1 + 0.5 * (squirmDyDxAmp * squirmDyDxAmp + squirmDzDxAmp * squirmDzDxAmp),
+    );
+    const travelDelta = delta / avgPathStretch;
+
+    this.time += travelDelta;
     this.pulseTime += delta;
     this.time = this.time % this.smoothedGrubSpacingX;
 
