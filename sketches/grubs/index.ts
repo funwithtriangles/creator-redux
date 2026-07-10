@@ -9,8 +9,9 @@ import {
 } from "three/webgpu";
 
 const SEGMENT_COUNT = 24;
-const ROW_COUNT = 24;
+const ROW_COUNT = 48;
 const GRUBS_PER_ROW = 12;
+const PARAM_SMOOTHING = 0.85;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
 
@@ -31,11 +32,23 @@ export default class Grubs {
   segments: Segment[] = [];
   time = 0;
   pulseTime = 0;
+  smoothedGrubSpacingX = Number.NaN;
+  smoothedSegSpacing = Number.NaN;
+  smoothedSquirmFreq = Number.NaN;
   lastMatCapUrl?: string;
   headMesh: InstancedMesh;
   bodyMat: MeshMatcapMaterial;
   bodyMesh: InstancedMesh;
   instanceHelper = new Object3D();
+
+  smoothParam(currentValue: number, targetValue: number) {
+    if (!Number.isFinite(currentValue)) {
+      return targetValue;
+    }
+
+    const lerpAlpha = 1 - PARAM_SMOOTHING;
+    return currentValue + (targetValue - currentValue) * lerpAlpha;
+  }
 
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
@@ -107,12 +120,29 @@ export default class Grubs {
     this.root.scale.setScalar(p.groupScale);
     const delta = deltaFrame * 0.01 * p.speed;
 
-    const wrapSpan = p.grubSpacingX * GRUBS_PER_ROW;
+    const targetSpacingX = Math.max(0.001, p.grubSpacingX);
+    const targetSegSpacing = Math.max(0, p.segSpacing);
+    const targetSquirmFreq = Math.max(0, p.squirmFreq);
+
+    this.smoothedGrubSpacingX = this.smoothParam(
+      this.smoothedGrubSpacingX,
+      targetSpacingX,
+    );
+    this.smoothedSegSpacing = this.smoothParam(
+      this.smoothedSegSpacing,
+      targetSegSpacing,
+    );
+    this.smoothedSquirmFreq = this.smoothParam(
+      this.smoothedSquirmFreq,
+      targetSquirmFreq,
+    );
+
+    const wrapSpan = this.smoothedGrubSpacingX * GRUBS_PER_ROW;
     const wrapLimit = wrapSpan * 0.5;
 
     this.time += delta;
     this.pulseTime += delta;
-    this.time = this.time % p.grubSpacingX;
+    this.time = this.time % this.smoothedGrubSpacingX;
 
     const rowArc = TAU / ROW_COUNT;
 
@@ -133,20 +163,25 @@ export default class Grubs {
         p.rowStagger * Math.sin(rowIndex * p.rowStaggerFreq) * direction;
 
       const grubOffsetX =
-        (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * p.grubSpacingX + stagger;
+        (grubIndex - (GRUBS_PER_ROW - 1) * 0.5) * this.smoothedGrubSpacingX +
+        stagger;
       const xRaw =
         this.time * direction -
-        segmentIndex * p.segSpacing * direction +
+        segmentIndex * this.smoothedSegSpacing * direction +
         grubOffsetX;
 
       const x =
         ((((xRaw + wrapLimit * 2) % wrapSpan) + wrapSpan) % wrapSpan) -
         wrapLimit;
-      const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
-      const z = rowCenterZ + Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
+      const y =
+        rowCenterY + Math.cos(x * this.smoothedSquirmFreq) * p.squirmAmpY;
+      const z =
+        rowCenterZ + Math.sin(x * this.smoothedSquirmFreq) * p.squirmAmpZ;
 
       const pulsePhase =
-        this.pulseTime - segmentIndex * p.segSpacing * p.pulseFreq + rowIndex;
+        this.pulseTime -
+        segmentIndex * this.smoothedSegSpacing * p.pulseFreq +
+        rowIndex;
 
       const pulseWave = Math.sin(pulsePhase);
       const tailTaper = 1 - t * p.tailTaper;
