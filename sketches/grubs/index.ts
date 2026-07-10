@@ -30,7 +30,6 @@ export default class Grubs {
   cylinder = new Group();
   segments: Segment[] = [];
   time = 0;
-  squirmTime = 0;
   pulseTime = 0;
   lastMatCapUrl?: string;
   headMesh: InstancedMesh;
@@ -107,12 +106,13 @@ export default class Grubs {
 
     this.root.scale.setScalar(p.groupScale);
     const delta = deltaFrame * 0.01 * p.speed;
-    this.time += delta;
-    this.squirmTime += delta;
-    this.pulseTime += delta;
 
     const wrapSpan = p.grubSpacingX * GRUBS_PER_ROW;
     const wrapLimit = wrapSpan * 0.5;
+
+    this.time += delta;
+    this.pulseTime += delta;
+    this.time = this.time % p.grubSpacingX;
 
     const rowArc = TAU / ROW_COUNT;
 
@@ -125,11 +125,6 @@ export default class Grubs {
       isHead,
     } of this.segments) {
       const t = segmentIndex / SEGMENT_COUNT;
-      const pulsePhase =
-        this.pulseTime -
-        segmentIndex * p.segSpacing * p.pulseFreq +
-        rowIndex +
-        grubIndex;
 
       const rowCenterY = Math.sin(rowIndex * rowArc) * p.cylinderRadius;
       const rowCenterZ = Math.cos(rowIndex * rowArc) * p.cylinderRadius;
@@ -149,6 +144,9 @@ export default class Grubs {
         wrapLimit;
       const y = rowCenterY + Math.cos(x * p.squirmFreq) * p.squirmAmpY;
       const z = rowCenterZ + Math.sin(x * p.squirmFreq) * p.squirmAmpZ;
+
+      const pulsePhase =
+        this.pulseTime - segmentIndex * p.segSpacing * p.pulseFreq + rowIndex;
 
       const pulseWave = Math.sin(pulsePhase);
       const tailTaper = 1 - t * p.tailTaper;
