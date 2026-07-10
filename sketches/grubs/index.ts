@@ -1,12 +1,14 @@
+import { GLTFLoader } from "three-stdlib";
 import {
   InstancedMesh,
   Group,
-  MeshBasicMaterial,
   MeshMatcapMaterial,
+  Mesh,
   Object3D,
   SphereGeometry,
   TextureLoader,
 } from "three/webgpu";
+import { vec3 } from "three/tsl";
 
 const SEGMENT_COUNT = 24;
 const ROW_COUNT = 48;
@@ -14,6 +16,9 @@ const GRUBS_PER_ROW = 12;
 const PARAM_SMOOTHING = 0.95;
 const sphereDetail = 20;
 const textureLoader = new TextureLoader();
+const gltfLoader = new GLTFLoader();
+
+import grubGlbUrl from "./grub.glb";
 
 const TAU = Math.PI * 2;
 
@@ -38,9 +43,30 @@ export default class Grubs {
   baseCylinderRadius = Number.NaN;
   lastMatCapUrl?: string;
   headMesh: InstancedMesh;
+  headMat: MeshMatcapMaterial;
   bodyMat: MeshMatcapMaterial;
   bodyMesh: InstancedMesh;
   instanceHelper = new Object3D();
+
+  loadHeadMesh(headCount: number) {
+    gltfLoader.load(grubGlbUrl, (gltf) => {
+      const sourceMesh = gltf.scene.getObjectByProperty("isMesh", true) as
+        | Mesh
+        | undefined;
+
+      if (!sourceMesh) return;
+
+      const oldHeadMesh = this.headMesh;
+      this.headMesh = new InstancedMesh(
+        sourceMesh.geometry,
+        this.headMat,
+        headCount,
+      );
+
+      this.cylinder.add(this.headMesh);
+      this.cylinder.remove(oldHeadMesh);
+    });
+  }
 
   smoothParam(currentValue: number, targetValue: number) {
     if (!Number.isFinite(currentValue)) {
@@ -53,16 +79,18 @@ export default class Grubs {
 
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
-    const headMat = new MeshBasicMaterial();
+    this.headMat = new MeshMatcapMaterial();
     this.bodyMat = new MeshMatcapMaterial();
+    this.headMat.colorNode = vec3(1.5, 1.5, 1.5);
     const headCount = ROW_COUNT * GRUBS_PER_ROW;
     const bodyCount = ROW_COUNT * GRUBS_PER_ROW * (SEGMENT_COUNT - 1);
 
-    this.headMesh = new InstancedMesh(geometry, headMat, headCount);
+    this.headMesh = new InstancedMesh(geometry, this.headMat, headCount);
     this.bodyMesh = new InstancedMesh(geometry, this.bodyMat, bodyCount);
 
     this.cylinder.add(this.headMesh, this.bodyMesh);
     this.root.add(this.cylinder);
+    this.loadHeadMesh(headCount);
 
     let headInstanceIndex = 0;
     let bodyInstanceIndex = 0;
@@ -76,7 +104,6 @@ export default class Grubs {
           segmentIndex < SEGMENT_COUNT;
           segmentIndex++
         ) {
-          const mat = segmentIndex === 0 ? headMat : this.bodyMat;
           const isHead = segmentIndex === 0;
           const instanceIndex = isHead
             ? headInstanceIndex++
@@ -108,6 +135,8 @@ export default class Grubs {
       textureLoader.load(
         p.matcapFileName,
         (matcap) => {
+          this.headMat.matcap = matcap;
+          this.headMat.needsUpdate = true;
           this.bodyMat.matcap = matcap;
           this.bodyMat.needsUpdate = true;
         },
