@@ -35,6 +35,7 @@ export default class Grubs {
   smoothedGrubSpacingX = Number.NaN;
   smoothedSegSpacing = Number.NaN;
   smoothedSquirmFreq = Number.NaN;
+  baseCylinderRadius = Number.NaN;
   lastMatCapUrl?: string;
   headMesh: InstancedMesh;
   bodyMat: MeshMatcapMaterial;
@@ -117,8 +118,15 @@ export default class Grubs {
       );
     }
 
-    this.root.scale.setScalar(p.groupScale);
     const delta = deltaFrame * 0.01 * p.speed;
+
+    const safeCylinderRadius = Math.max(0.001, p.cylinderRadius);
+    if (!Number.isFinite(this.baseCylinderRadius)) {
+      this.baseCylinderRadius = safeCylinderRadius;
+    }
+    const radiusCompensationScale =
+      this.baseCylinderRadius / safeCylinderRadius;
+    this.root.scale.setScalar(p.groupScale * radiusCompensationScale);
 
     const targetSpacingX = Math.max(0.001, p.grubSpacingX);
     const targetSegSpacing = Math.max(0, p.segSpacing);
@@ -164,8 +172,8 @@ export default class Grubs {
     } of this.segments) {
       const t = segmentIndex / SEGMENT_COUNT;
 
-      const rowCenterY = Math.sin(rowIndex * rowArc) * p.cylinderRadius;
-      const rowCenterZ = Math.cos(rowIndex * rowArc) * p.cylinderRadius;
+      const rowCenterY = Math.sin(rowIndex * rowArc) * safeCylinderRadius;
+      const rowCenterZ = Math.cos(rowIndex * rowArc) * safeCylinderRadius;
 
       const stagger =
         p.rowStagger * Math.sin(rowIndex * p.rowStaggerFreq) * direction;
