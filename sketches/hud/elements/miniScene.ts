@@ -182,8 +182,8 @@ export class MiniScene {
     const currentTarget = renderer.getRenderTarget();
     renderer.setRenderTarget(this.renderTarget);
     renderer.setClearColor(0x000000, 0);
-    renderer.clearAsync();
-    renderer.renderAsync(this.scene, this.camera);
+    renderer.clear();
+    renderer.render(this.scene, this.camera);
     renderer.setRenderTarget(currentTarget);
   }
 
