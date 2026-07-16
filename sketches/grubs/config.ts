@@ -47,6 +47,14 @@ export default {
           sliderMin: 0.1,
           sliderMax: 5,
         },
+
+        {
+          key: "cylinderAngle",
+          title: "Cylinder Angle",
+          defaultValue: 0,
+          sliderMin: 0,
+          sliderMax: Math.PI * 2,
+        },
       ],
     },
     {

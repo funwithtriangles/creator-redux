@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-interface CameraConstructorParams {
-  camera: THREE.PerspectiveCamera;
+interface SketchConstructorArg {
+  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
   scene: THREE.Scene;
 }
 
@@ -24,49 +24,63 @@ const easeOutSine = (x: number): number => {
 
 export default class Camera {
   root: THREE.Group;
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
   lookAtPos: THREE.Vector3;
   orbitDelta = 0;
   latchDelta = 0;
   lerpDelta = 0;
   head: THREE.Object3D | null = null;
   currentMode: "orbit" | "closeUp" = "orbit";
+  currentType: "perspective" | "orthographic" = "perspective";
   isFirstFrame = true;
+  perspectiveCamera = new THREE.PerspectiveCamera();
+  orthographicCamera = new THREE.OrthographicCamera();
+  sketchApi: SketchConstructorArg;
 
-  constructor(params: CameraConstructorParams) {
+  constructor(sketchApi: SketchConstructorArg) {
     this.root = new THREE.Group();
-    this.scene = params.scene;
-    this.scene.add(params.camera);
+    // this.scene = scene;
+    // this.scene.add(camera);
 
-    params.camera = new THREE.OrthographicCamera();
+    this.sketchApi = sketchApi;
+    const { camera, scene } = sketchApi;
 
-    this.camera = params.camera;
-    this.camera.near = 0.0001;
+    this.sketchApi.camera = this.perspectiveCamera;
+
+    this.sketchApi.camera = camera;
+
     this.lookAtPos = new THREE.Vector3();
+
+    this.sketchApi.camera.near = 0.0001;
 
     // Hack to position cameras on JBoys head
     setTimeout(() => {
-      const item = params.scene.getObjectByName("mixamorigHead");
+      const item = scene.getObjectByName("mixamorigHead");
       if (item) {
         this.head = item;
       }
     }, 3000);
   }
 
-  closeUp() {
-    if (this.head) {
-      this.head.add(this.camera);
-      this.currentMode = "closeUp";
-    }
-  }
-
-  orbitCam() {
-    this.scene.add(this.camera);
-    this.currentMode = "orbit";
-  }
-
   update({ params: p, deltaFrame: f }: UpdateParams) {
+    if (this.currentType !== p.cameraType) {
+      if (p.cameraType === "perspective") {
+        this.sketchApi.camera = this.perspectiveCamera;
+      } else {
+        this.sketchApi.camera = this.orthographicCamera;
+      }
+      this.currentType = p.cameraType;
+    }
+
+    if (this.sketchApi.camera instanceof THREE.PerspectiveCamera) {
+      this.sketchApi.camera.fov = p.fov;
+      this.sketchApi.camera.filmOffset = p.filmOffset;
+      this.sketchApi.camera.zoom = p.perspectiveZoom;
+    } else {
+      this.sketchApi.camera.zoom = p.orthographicZoom;
+    }
+
+    this.sketchApi.camera.updateProjectionMatrix();
+
     if (this.isFirstFrame) {
       this.orbitDelta = p.orbitRot;
       this.latchDelta = this.orbitDelta;
@@ -75,16 +89,14 @@ export default class Camera {
 
     if (this.currentMode != p.mode) {
       if (p.mode === "closeUp") {
-        this.closeUp();
+        if (this.head) {
+          this.head.add(this.sketchApi.camera);
+          this.currentMode = "closeUp";
+        }
       } else {
-        this.orbitCam();
+        this.currentMode = "orbit";
       }
     }
-
-    this.camera.fov = p.fov;
-    this.camera.zoom = p.zoom;
-    this.camera.filmOffset = p.filmOffset;
-    this.camera.updateProjectionMatrix();
 
     if (this.currentMode === "orbit") {
       let rot;
@@ -115,14 +127,14 @@ export default class Camera {
 
       rot = this.orbitDelta;
 
-      const x = Math.sin(rot) * p.orbitRad * p.bigZoom;
-      const z = Math.cos(rot) * p.orbitRad * p.bigZoom;
+      const x = Math.sin(rot) * p.orbitRad * p.bigOrbitRad;
+      const z = Math.cos(rot) * p.orbitRad * p.bigOrbitRad;
       this.lookAtPos.set(0, p.lookAtPosY, 0);
-      this.camera.position.set(x, p.camY, z);
-      this.camera.lookAt(this.lookAtPos);
+      this.sketchApi.camera.position.set(x, p.camY, z);
+      this.sketchApi.camera.lookAt(this.lookAtPos);
     } else {
-      this.camera.rotation.set(0, 0, 0);
-      this.camera.position.set(0, 0, p.headCamDistance * 80);
+      this.sketchApi.camera.rotation.set(0, 0, 0);
+      this.sketchApi.camera.position.set(0, 0, p.headCamDistance * 80);
     }
 
     this.isFirstFrame = false;

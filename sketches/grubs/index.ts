@@ -7,6 +7,7 @@ import {
   Object3D,
   SphereGeometry,
   TextureLoader,
+  Vector3,
 } from "three/webgpu";
 import { vec3 } from "three/tsl";
 
@@ -47,6 +48,9 @@ export default class Grubs {
   bodyMat: MeshMatcapMaterial;
   bodyMesh: InstancedMesh;
   instanceHelper = new Object3D();
+  headForwardAxis = new Vector3(0, 0, 1);
+  headTangent = new Vector3();
+  cylinderRotation = 0;
 
   loadHeadMesh(headCount: number) {
     gltfLoader.load(grubGlbUrl, (gltf) => {
@@ -81,7 +85,7 @@ export default class Grubs {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
     this.headMat = new MeshMatcapMaterial();
     this.bodyMat = new MeshMatcapMaterial();
-    this.headMat.colorNode = vec3(1.5, 1.5, 1.5);
+    this.headMat.colorNode = vec3(2, 2, 2);
     const headCount = ROW_COUNT * GRUBS_PER_ROW;
     const bodyCount = ROW_COUNT * GRUBS_PER_ROW * (SEGMENT_COUNT - 1);
 
@@ -149,6 +153,9 @@ export default class Grubs {
 
     const delta = deltaFrame * 0.01 * p.speed;
 
+    this.cylinderRotation += p.cylinderRotSpeed * 0.01;
+    this.cylinder.rotation.y = p.cylinderAngle;
+
     const safeCylinderRadius = Math.max(0.001, p.cylinderRadius);
     if (!Number.isFinite(this.baseCylinderRadius)) {
       this.baseCylinderRadius = safeCylinderRadius;
@@ -201,8 +208,12 @@ export default class Grubs {
     } of this.segments) {
       const t = segmentIndex / SEGMENT_COUNT;
 
-      const rowCenterY = Math.sin(rowIndex * rowArc) * safeCylinderRadius;
-      const rowCenterZ = Math.cos(rowIndex * rowArc) * safeCylinderRadius;
+      const rowCenterY =
+        Math.sin(rowIndex * rowArc + this.cylinderRotation) *
+        safeCylinderRadius;
+      const rowCenterZ =
+        Math.cos(rowIndex * rowArc + this.cylinderRotation) *
+        safeCylinderRadius;
 
       const stagger =
         p.rowStagger * Math.sin(rowIndex * p.rowStaggerFreq) * direction;
@@ -237,6 +248,24 @@ export default class Grubs {
       );
 
       this.instanceHelper.position.set(x, y, z);
+      if (isHead) {
+        const waveArg = x * this.smoothedSquirmFreq;
+        const tangentY =
+          -Math.sin(waveArg) * this.smoothedSquirmFreq * p.squirmAmpY;
+        const tangentZ =
+          Math.cos(waveArg) * this.smoothedSquirmFreq * p.squirmAmpZ;
+
+        this.headTangent
+          .set(direction, tangentY * direction, tangentZ * direction)
+          .normalize();
+
+        this.instanceHelper.quaternion.setFromUnitVectors(
+          this.headForwardAxis,
+          this.headTangent,
+        );
+      } else {
+        this.instanceHelper.quaternion.identity();
+      }
       this.instanceHelper.scale.setScalar(radius);
       this.instanceHelper.updateMatrix();
 
@@ -246,6 +275,5 @@ export default class Grubs {
 
     this.headMesh.instanceMatrix.needsUpdate = true;
     this.bodyMesh.instanceMatrix.needsUpdate = true;
-    this.cylinder.rotation.x += p.cylinderRotSpeed * 0.01;
   }
 }
