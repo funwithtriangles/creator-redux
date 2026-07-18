@@ -12,6 +12,18 @@ import {
 } from "three/webgpu";
 import glbUrl from "./creator.glb";
 
+const HF = Math.PI; // half turn
+const QT = Math.PI / 2; // quarter turn
+
+const ROT_OFFSETS = [
+  [HF, 0, 0],
+  [0, 0, HF],
+  [QT, 0, 0],
+  [QT, HF, 0],
+  [QT, 0, HF],
+  [-QT, 0, 0],
+];
+
 import { sketchUniforms, uniformsParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 // import { caustics } from "./caustics";
@@ -57,6 +69,7 @@ export default class Creator {
   group?: Object3D;
   pieces: Mesh[] = [];
   time = 0;
+  lastPieceOffsetIndex = 0;
 
   uniforms = {
     ...sketchUniforms,
@@ -128,6 +141,8 @@ export default class Creator {
           child.material = objectMaterial;
 
           this.pieces.push(child);
+
+          child.userData.originalRotation = child.rotation.clone();
         }
       });
     });
@@ -145,6 +160,35 @@ export default class Creator {
     );
 
     return prevPass;
+  }
+
+  rotatePiecesRandom() {
+    let index;
+    let offset;
+    do {
+      index = Math.floor(Math.random() * ROT_OFFSETS.length);
+      offset = ROT_OFFSETS[index];
+    } while (index === this.lastPieceOffsetIndex);
+
+    console.log(index);
+    this.lastPieceOffsetIndex = index;
+
+    for (let i = 0; i < this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      piece.rotation.x = offset[0];
+      piece.rotation.y = offset[1];
+      piece.rotation.z = offset[2];
+    }
+  }
+
+  rotatePiecesReset() {
+    for (let i = 0; i < this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      const offset = piece.userData.originalRotation;
+      piece.rotation.x = offset.x;
+      piece.rotation.y = offset.y;
+      piece.rotation.z = offset.z;
+    }
   }
 
   update({ params: p, deltaTime: d }) {

@@ -350,7 +350,16 @@ export default {
   title: "Creator",
   description: "The big guy",
   params: [...uniformsParamsConfig],
-  shots: [],
+  shots: [
+    {
+      key: "rotatePiecesRandom",
+      title: "Rotate Pieces Randomly",
+    },
+    {
+      key: "rotatePiecesReset",
+      title: "Rotate Pieces Reset",
+    },
+  ],
 };
 
 export const sketchUniforms = convertParamsToUniforms([
