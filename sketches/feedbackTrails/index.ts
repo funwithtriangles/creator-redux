@@ -32,7 +32,9 @@ export default class FeedbackTrails {
   ): ShaderNodeObject<Node> {
     const { rotAngle, scale, mixAmp, direction } = this.uniforms;
 
-    const maskTexture = renderPassNode.getTextureNode("mask");
+    const maskTexture = renderPassNode.getMRT()?.has("mask")
+      ? renderPassNode.getTextureNode("mask")
+      : null;
 
     const feedbackPass = pingPong(prevPass, (textureNew, textureOld) => {
       // Rotate, scale, and offset UVs for the old (feedback) texture
@@ -44,7 +46,7 @@ export default class FeedbackTrails {
 
       const texelNew = textureNew.sample(screenUV).toVar();
       const texelOld = textureOld.sample(rotated).toVar();
-      const mask = maskTexture.sample(screenUV).r;
+      const mask = maskTexture ? maskTexture.sample(screenUV).r : float(0.5);
 
       // Only write masked geometry pixels into the feedback buffer
       const maskedNew = mix(vec4(0), texelNew, mask);
