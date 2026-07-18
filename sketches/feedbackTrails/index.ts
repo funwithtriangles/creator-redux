@@ -1,4 +1,4 @@
-import { Node, PassNode, WebGPURenderer } from "three/webgpu";
+import { Color, Node, PassNode, WebGPURenderer } from "three/webgpu";
 import {
   depth,
   float,
@@ -15,6 +15,8 @@ import {
 import { convertParamsToUniforms, updateUniforms } from "../../uniformUtils";
 import config from "./config";
 import { pingPong } from "./pingPongNode";
+
+const clrClr = new Color();
 
 export default class FeedbackTrails {
   uniforms = convertParamsToUniforms(config.params);
@@ -60,6 +62,9 @@ export default class FeedbackTrails {
   }
 
   update({ params, deltaFrame, scene }) {
+    this.renderer.setClearColor(clrClr.setRGB(...params.clearColor), 1);
+
+    this.renderer.autoClearColor = params.autoClear;
     updateUniforms(config.params, this.uniforms, params);
   }
 }

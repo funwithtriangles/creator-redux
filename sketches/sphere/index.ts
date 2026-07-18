@@ -72,14 +72,14 @@ export default class Sphere {
     params: Record<string, any>;
     deltaTime: number;
   }) {
-    const speed = p.speed * d;
+    const speed = p.speed * d * 1;
     const halfSpread = SPREAD.clone().multiplyScalar(0.5);
 
     updateUniforms(stripesParamsConfig as any, this.stripesUniforms, p);
     this.stripesUniforms.stripeTime.value +=
-      d * this.stripesUniforms.stripeSpeed.value * 0.01;
+      d * this.stripesUniforms.stripeSpeed.value * 0.1;
     this.stripesUniforms.warpNoiseTime.value +=
-      d * this.stripesUniforms.warpNoiseSpeed.value * 0.01;
+      d * this.stripesUniforms.warpNoiseSpeed.value * 0.1;
 
     for (const { mesh, velocity } of this.spheres) {
       mesh.position.addScaledVector(velocity, speed);
@@ -100,6 +100,7 @@ export default class Sphere {
       const t = Math.max(Math.min(entryT, exitT), 0);
       const smoothT = t * t * (3 - 2 * t);
       mesh.scale.setScalar(p.baseScale * smoothT);
+      mesh.rotation.y += 2 * d;
 
       // Reposition if in deadzone
       if (isInDeadzone(mesh.position)) {

@@ -21,6 +21,7 @@ import {
 } from "./wireframe";
 
 const gltfLoader = new GLTFLoader();
+const oldClrClr = new Color();
 
 export class MiniScene {
   scene: Scene;
@@ -173,6 +174,8 @@ export class MiniScene {
   }) {
     if (this.parts.length === 0) return;
 
+    renderer.getClearColor(oldClrClr);
+
     this.wireframeThickness.value = p.wireframeThickness;
     this.time += deltaFrame * p.spinSpeed * 0.02;
     this.group.rotation.y = this.time;
@@ -182,8 +185,9 @@ export class MiniScene {
     const currentTarget = renderer.getRenderTarget();
     renderer.setRenderTarget(this.renderTarget);
     renderer.setClearColor(0x000000, 0);
-    renderer.clear();
+    // renderer.clear();
     renderer.render(this.scene, this.camera);
+    renderer.setClearColor(oldClrClr, 1);
     renderer.setRenderTarget(currentTarget);
   }
 
