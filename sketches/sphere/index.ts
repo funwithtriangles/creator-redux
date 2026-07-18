@@ -11,11 +11,10 @@ import { stripes } from "../creator/stripes";
 import { stripesUniforms, stripesParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 
-const SPHERE_COUNT = 100;
+const SPHERE_COUNT = 300;
 const SPREAD = new Vector3(30, 30, 50);
 const DEADZONE = new Vector3(6, 6, 6);
 const SHRINK_DIST = 10;
-const BASE_SCALE = 5;
 
 function isInDeadzone(pos: Vector3): boolean {
   return (
@@ -68,10 +67,10 @@ export default class Sphere {
 
   update({
     params: p,
-    deltaFrame: d,
+    deltaTime: d,
   }: {
     params: Record<string, any>;
-    deltaFrame: number;
+    deltaTime: number;
   }) {
     const speed = p.speed * d;
     const halfSpread = SPREAD.clone().multiplyScalar(0.5);
@@ -100,7 +99,7 @@ export default class Sphere {
       const exitT = Math.min((mesh.position.z + halfSpread.z) / SHRINK_DIST, 1);
       const t = Math.max(Math.min(entryT, exitT), 0);
       const smoothT = t * t * (3 - 2 * t);
-      mesh.scale.setScalar(BASE_SCALE * smoothT);
+      mesh.scale.setScalar(p.baseScale * smoothT);
 
       // Reposition if in deadzone
       if (isInDeadzone(mesh.position)) {

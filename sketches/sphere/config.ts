@@ -46,6 +46,12 @@ export default {
   description: "Flying spheres with stripes material",
   params: [
     {
+      key: "baseScale",
+      defaultValue: 1,
+      sliderMin: 0.0001,
+      sliderMax: 10,
+    },
+    {
       key: "speed",
       title: "Speed",
       defaultValue: 0.1,

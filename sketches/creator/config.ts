@@ -263,6 +263,53 @@ export const uniformsParamsConfig = [
     ],
   },
   {
+    groupTitle: "Displacement",
+    params: [
+      {
+        key: "displacementAmp",
+        defaultValue: 0.08,
+        sliderMin: 0,
+        sliderMax: 0.5,
+      },
+      {
+        key: "displacementFreq",
+        defaultValue: 2,
+        sliderMin: 0,
+        sliderMax: 10,
+      },
+      {
+        key: "displacementBias",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "displacementSpeed",
+        defaultValue: 0.5,
+        sliderMin: 0,
+        sliderMax: 5,
+      },
+      {
+        key: "displacementDirX",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "displacementDirY",
+        defaultValue: 1,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+      {
+        key: "displacementDirZ",
+        defaultValue: 0,
+        sliderMin: -1,
+        sliderMax: 1,
+      },
+    ],
+  },
+  {
     groupTitle: "Pieces",
     params: [
       {

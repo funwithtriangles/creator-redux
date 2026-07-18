@@ -30,6 +30,7 @@ import {
   vec3,
 } from "three/tsl";
 import { stripes } from "./stripes";
+import { displacement } from "./displacement";
 import {
   wireframeAlphaFloat,
   wireframeEmissiveColor,
@@ -63,10 +64,12 @@ export default class Creator {
     stripeTime: uniform(0),
     warpNoiseTime: uniform(0),
     wireNoiseTime: uniform(0),
+    displacementTime: uniform(0),
   };
 
   constructor() {
     const wavesNode = stripes({ ...this.uniforms })();
+    const displacementNode = displacement({ ...this.uniforms })();
     const wireAlpha = wireframeAlphaFloat({
       thickness: this.uniforms.wireframeThickness,
     });
@@ -101,6 +104,8 @@ export default class Creator {
       color: 0xffffff,
       side: 2, // DoubleSide
     });
+
+    objectMaterial.positionNode = displacementNode;
 
     const wireframeCol = (objectMaterial.emissiveNode = mix(
       wavesNode,
@@ -142,23 +147,24 @@ export default class Creator {
     return prevPass;
   }
 
-  update({ params: p, deltaFrame: d }) {
+  update({ params: p, deltaTime: d }) {
     updateUniforms(uniformsParamsConfig, this.uniforms, p);
 
-    this.uniforms.marbleTime.value +=
-      d * this.uniforms.marbleSpeed.value * 0.01;
+    this.uniforms.marbleTime.value += d * this.uniforms.marbleSpeed.value;
 
-    this.uniforms.stripeTime.value +=
-      d * this.uniforms.stripeSpeed.value * 0.01;
+    this.uniforms.stripeTime.value += d * this.uniforms.stripeSpeed.value * 0.1;
 
     this.uniforms.warpNoiseTime.value +=
-      d * this.uniforms.warpNoiseSpeed.value * 0.01;
+      d * this.uniforms.warpNoiseSpeed.value * 0.1;
 
     this.uniforms.wireNoiseTime.value +=
-      d * this.uniforms.wireNoiseSpeed.value * 0.01;
+      d * this.uniforms.wireNoiseSpeed.value * 0.1;
+
+    this.uniforms.displacementTime.value +=
+      d * this.uniforms.displacementSpeed.value;
 
     // Modulate scale of each piece
-    this.time += d * 0.05 * p.pieceScaleSpeed;
+    this.time += d * p.pieceScaleSpeed;
     for (let i = 0; i < this.pieces.length; i++) {
       const piece = this.pieces[i];
       const offset =

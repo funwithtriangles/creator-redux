@@ -61,7 +61,7 @@ export default class Camera {
     }, 3000);
   }
 
-  update({ params: p, deltaFrame: f }: UpdateParams) {
+  update({ params: p, deltaTime: f }: UpdateParams) {
     if (this.currentType !== p.cameraType) {
       if (p.cameraType === "perspective") {
         this.sketchApi.camera = this.perspectiveCamera;
