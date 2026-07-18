@@ -49,13 +49,17 @@ export default class HUD {
   }
 
   update({ params, deltaFrame, scene }) {
+    updateUniforms(config.params, this.uniforms, params);
+
+    if (params.hud_opacity < 0.001) {
+      return;
+    }
+
     this.hud.update({
       renderer: this.renderer,
       deltaFrame,
       params,
       camera: scene.camera,
     });
-
-    updateUniforms(config.params, this.uniforms, params);
   }
 }

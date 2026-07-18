@@ -52,6 +52,11 @@ export default {
       sliderMin: 0,
       sliderMax: 1,
     },
+    {
+      key: "direction",
+      valueType: "vector2",
+      defaultValue: [0.5, 0.5],
+    },
     ...stripesParamsConfig,
   ],
 };

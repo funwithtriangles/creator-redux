@@ -4,6 +4,7 @@ import {
   MeshBasicNodeMaterial,
   SphereGeometry,
   Vector3,
+  Euler,
 } from "three/webgpu";
 import { uniform } from "three/tsl";
 import { stripes } from "../creator/stripes";
@@ -11,8 +12,10 @@ import { stripesUniforms, stripesParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 
 const SPHERE_COUNT = 100;
-const SPREAD = new Vector3(20, 20, 30);
+const SPREAD = new Vector3(30, 30, 50);
 const DEADZONE = new Vector3(6, 6, 6);
+const SHRINK_DIST = 10;
+const BASE_SCALE = 5;
 
 function isInDeadzone(pos: Vector3): boolean {
   return (
@@ -55,8 +58,6 @@ export default class Sphere {
     for (let i = 0; i < SPHERE_COUNT; i++) {
       const mesh = new Mesh(geometry, material);
       randomizeOutsideDeadzone(mesh.position);
-      const scale = 5;
-      mesh.scale.setScalar(scale);
 
       const velocity = new Vector3(0, 0, -1);
 
@@ -66,20 +67,20 @@ export default class Sphere {
   }
 
   update({
-    params,
-    deltaFrame,
+    params: p,
+    deltaFrame: d,
   }: {
-    params: Record<string, number>;
+    params: Record<string, any>;
     deltaFrame: number;
   }) {
-    const speed = params.speed * deltaFrame;
+    const speed = p.speed * d;
     const halfSpread = SPREAD.clone().multiplyScalar(0.5);
 
-    updateUniforms(stripesParamsConfig as any, this.stripesUniforms, params);
+    updateUniforms(stripesParamsConfig as any, this.stripesUniforms, p);
     this.stripesUniforms.stripeTime.value +=
-      deltaFrame * this.stripesUniforms.stripeSpeed.value * 0.01;
+      d * this.stripesUniforms.stripeSpeed.value * 0.01;
     this.stripesUniforms.warpNoiseTime.value +=
-      deltaFrame * this.stripesUniforms.warpNoiseSpeed.value * 0.01;
+      d * this.stripesUniforms.warpNoiseSpeed.value * 0.01;
 
     for (const { mesh, velocity } of this.spheres) {
       mesh.position.addScaledVector(velocity, speed);
@@ -92,10 +93,24 @@ export default class Sphere {
           mesh.position[axis] += SPREAD[axis];
       }
 
-      // Push out of deadzone
+      const entryT = Math.min(
+        (halfSpread.z - mesh.position.z) / SHRINK_DIST,
+        1,
+      );
+      const exitT = Math.min((mesh.position.z + halfSpread.z) / SHRINK_DIST, 1);
+      const t = Math.max(Math.min(entryT, exitT), 0);
+      const smoothT = t * t * (3 - 2 * t);
+      mesh.scale.setScalar(BASE_SCALE * smoothT);
+
+      // Reposition if in deadzone
       if (isInDeadzone(mesh.position)) {
         randomizeOutsideDeadzone(mesh.position);
       }
     }
+
+    // Rotate the group to face direction
+    this.root.rotation.order = "YXZ";
+    this.root.rotation.y = p.direction[0] * Math.PI * 0.5;
+    this.root.rotation.x = -p.direction[1] * Math.PI * 0.5;
   }
 }
