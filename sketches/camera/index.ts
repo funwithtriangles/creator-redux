@@ -110,7 +110,7 @@ export default class Camera {
           diff += TAU;
         }
 
-        const step = p.rotSpeed / TAU;
+        const step = (p.rotSpeed * f) / TAU;
         const target = this.orbitDelta + diff;
 
         if (this.lerpDelta < 1) {
