@@ -1,3 +1,45 @@
+import { convertParamsToUniforms } from "../slug/uniformsUtils";
+
+export const uniformsParamsConfig = [
+  {
+    groupTitle: "Background",
+    params: [
+      {
+        key: "bgScale",
+        title: "Background Scale",
+        defaultValue: 1,
+        sliderMin: 0.1,
+        sliderMax: 10,
+      },
+      {
+        key: "bgFreq",
+        title: "Background Frequency",
+        defaultValue: 1,
+        sliderMin: 0.1,
+        sliderMax: 5,
+      },
+      {
+        key: "bgAmp",
+        title: "Background Amp",
+        defaultValue: 1,
+        sliderMin: 0.1,
+        sliderMax: 5,
+      },
+      {
+        key: "bgColor",
+        title: "Background Color",
+        defaultValue: [0, 0, 0],
+        valueType: "rgb",
+      },
+      {
+        key: "bgRotSpeed",
+        title: "Background Rot Speed",
+        defaultValue: 0,
+      },
+    ],
+  },
+];
+
 export default {
   title: "Grubs",
   description: "Segmented squirming grub prototype",
@@ -140,5 +182,10 @@ export default {
         },
       ],
     },
+    ...uniformsParamsConfig,
   ],
 };
+
+export const sketchUniforms = convertParamsToUniforms([
+  ...uniformsParamsConfig,
+]);

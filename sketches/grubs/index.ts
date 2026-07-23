@@ -3,23 +3,40 @@ import {
   InstancedMesh,
   Group,
   MeshMatcapMaterial,
+  MeshMatcapNodeMaterial,
   Mesh,
   Object3D,
   SphereGeometry,
   TextureLoader,
   Vector3,
+  BackSide,
 } from "three/webgpu";
-import { vec3 } from "three/tsl";
+import {
+  bumpMap,
+  dot,
+  float,
+  mx_noise_float,
+  normalLocal,
+  positionGeometry,
+  positionLocal,
+  positionWorld,
+  sin,
+  uniform,
+  vec3,
+} from "three/tsl";
 
 const SEGMENT_COUNT = 24;
 const ROW_COUNT = 48;
 const GRUBS_PER_ROW = 12;
 const PARAM_SMOOTHING = 0.95;
 const sphereDetail = 20;
+const giantHeadDetail = 96;
 const textureLoader = new TextureLoader();
 const gltfLoader = new GLTFLoader();
 
 import grubGlbUrl from "./grub.glb";
+import { sketchUniforms, uniformsParamsConfig } from "./config";
+import { updateUniforms } from "../../uniformUtils";
 
 const TAU = Math.PI * 2;
 
@@ -44,13 +61,20 @@ export default class Grubs {
   baseCylinderRadius = Number.NaN;
   lastMatCapUrl?: string;
   headMesh: InstancedMesh;
+  giantHead?: Mesh;
   headMat: MeshMatcapMaterial;
+  giantHeadMat: MeshMatcapNodeMaterial;
   bodyMat: MeshMatcapMaterial;
   bodyMesh: InstancedMesh;
+  giantHeadTime = uniform(0);
   instanceHelper = new Object3D();
   headForwardAxis = new Vector3(0, 0, 1);
   headTangent = new Vector3();
   cylinderRotation = 0;
+
+  uniforms = {
+    ...sketchUniforms,
+  };
 
   loadHeadMesh(headCount: number) {
     gltfLoader.load(grubGlbUrl, (gltf) => {
@@ -61,14 +85,26 @@ export default class Grubs {
       if (!sourceMesh) return;
 
       const oldHeadMesh = this.headMesh;
+      const oldGiantHead = this.giantHead;
+      const giantHeadGeometry = new SphereGeometry(
+        1,
+        giantHeadDetail,
+        giantHeadDetail,
+      );
+
       this.headMesh = new InstancedMesh(
         sourceMesh.geometry,
         this.headMat,
         headCount,
       );
+      this.giantHead = new Mesh(giantHeadGeometry, this.giantHeadMat);
 
       this.cylinder.add(this.headMesh);
       this.cylinder.remove(oldHeadMesh);
+      if (oldGiantHead) {
+        this.root.remove(oldGiantHead);
+      }
+      this.root.add(this.giantHead);
     });
   }
 
@@ -84,8 +120,19 @@ export default class Grubs {
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
     this.headMat = new MeshMatcapMaterial();
+    this.giantHeadMat = new MeshMatcapNodeMaterial({ side: BackSide });
     this.bodyMat = new MeshMatcapMaterial();
     this.headMat.colorNode = vec3(2, 2, 2);
+    this.giantHeadMat.colorNode = this.uniforms.bgColor;
+
+    this.giantHeadMat.positionNode = positionLocal.add(
+      normalLocal
+        .normalize()
+        .mul(
+          sin(positionLocal.mul(this.uniforms.bgFreq)).mul(this.uniforms.bgAmp),
+        ),
+    );
+
     const headCount = ROW_COUNT * GRUBS_PER_ROW;
     const bodyCount = ROW_COUNT * GRUBS_PER_ROW * (SEGMENT_COUNT - 1);
 
@@ -128,11 +175,13 @@ export default class Grubs {
 
   update({
     params: p,
-    deltaFrame,
+    deltaTime: d,
   }: {
     params: Record<string, any>;
-    deltaFrame: number;
+    deltaTime: number;
   }) {
+    updateUniforms(uniformsParamsConfig, this.uniforms, p);
+
     // TODO: We wouldn't need to check every frame if we had some sketch api for reacting to param changes
     if (p.matcapFileName && p.matcapFileName !== this.lastMatCapUrl) {
       this.lastMatCapUrl = p.matcapFileName;
@@ -141,6 +190,8 @@ export default class Grubs {
         (matcap) => {
           this.headMat.matcap = matcap;
           this.headMat.needsUpdate = true;
+          this.giantHeadMat.matcap = matcap;
+          this.giantHeadMat.needsUpdate = true;
           this.bodyMat.matcap = matcap;
           this.bodyMat.needsUpdate = true;
         },
@@ -151,9 +202,10 @@ export default class Grubs {
       );
     }
 
-    const delta = deltaFrame * 0.01 * p.speed;
+    const delta = d * 0.1 * p.speed;
+    this.giantHeadTime.value = this.pulseTime * 0.35;
 
-    this.cylinderRotation += p.cylinderRotSpeed * 0.01;
+    this.cylinderRotation += p.cylinderRotSpeed * 0.1;
     this.cylinder.rotation.y = p.cylinderAngle;
 
     const safeCylinderRadius = Math.max(0.001, p.cylinderRadius);
@@ -162,7 +214,7 @@ export default class Grubs {
     }
     const radiusCompensationScale =
       this.baseCylinderRadius / safeCylinderRadius;
-    this.root.scale.setScalar(p.groupScale * radiusCompensationScale);
+    this.cylinder.scale.setScalar(p.groupScale * radiusCompensationScale);
 
     const targetSpacingX = Math.max(0.001, p.grubSpacingX);
     const targetSegSpacing = Math.max(0, p.segSpacing);
@@ -243,7 +295,7 @@ export default class Grubs {
       const tailTaper = 1 - t * p.tailTaper;
       const headTaper = 1 - (1 - t) * p.headTaper;
       const radius = Math.max(
-        0.05,
+        0,
         p.segScale * tailTaper * headTaper * (1 + pulseWave * p.pulseAmp),
       );
 
@@ -275,5 +327,11 @@ export default class Grubs {
 
     this.headMesh.instanceMatrix.needsUpdate = true;
     this.bodyMesh.instanceMatrix.needsUpdate = true;
+
+    if (this.giantHead) {
+      this.giantHead.scale.setScalar(p.bgScale);
+      this.giantHead.rotation.x += 0.5 * p.bgRotSpeed * d;
+      this.giantHead.rotation.y += 0.3 * p.bgRotSpeed * d;
+    }
   }
 }

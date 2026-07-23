@@ -66,7 +66,7 @@ light2.position.set(1, -1, -1);
 
 export default class Creator {
   root = new Group();
-  group?: Object3D;
+  group = Object3D;
   pieces: Mesh[] = [];
   time = 0;
   lastPieceOffsetIndex = 0;
@@ -217,6 +217,16 @@ export default class Creator {
       const scale =
         p.pieceBaseScale + Math.sin(this.time + offset) * p.pieceScaleAmp;
       piece.scale.setScalar(scale);
+    }
+
+    if (p.headIsRotating) {
+      this.root.rotation.x =
+        (this.root.rotation.x + d * p.headRotSpeedX) % (Math.PI * 2);
+      this.root.rotation.y =
+        (this.root.rotation.y + d * p.headRotSpeedY) % (Math.PI * 2);
+    } else {
+      this.root.rotation.x *= 0.9;
+      this.root.rotation.y *= 0.9;
     }
   }
 }

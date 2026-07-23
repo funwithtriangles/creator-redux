@@ -12,7 +12,7 @@ import { stripesUniforms, stripesParamsConfig } from "./config";
 import { updateUniforms } from "../../uniformUtils";
 
 const SPHERE_COUNT = 300;
-const SPREAD = new Vector3(30, 30, 70);
+const SPREAD = new Vector3(30, 30, 100);
 const DEADZONE = new Vector3(6, 6, 6);
 const SHRINK_DIST = 10;
 

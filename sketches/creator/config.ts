@@ -344,6 +344,25 @@ export const uniformsParamsConfig = [
       },
     ],
   },
+  {
+    groupTitle: "Head",
+    params: [
+      {
+        key: "headRotSpeedX",
+        defaultValue: 0.5,
+      },
+      {
+        key: "headRotSpeedY",
+        defaultValue: 0.5,
+      },
+      {
+        key: "headIsRotating",
+        valueType: "boolean",
+        defaultValue: false,
+        isBoolean: true,
+      },
+    ],
+  },
 ] as const;
 
 export default {

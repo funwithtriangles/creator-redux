@@ -75,7 +75,7 @@ export default class Env {
         })
         .mul(this.uniforms.bgIntensity);
 
-      // scene.environment = environmentMap;
+      scene.environment = environmentMap;
     });
   }
 

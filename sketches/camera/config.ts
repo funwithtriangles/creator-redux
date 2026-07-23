@@ -67,7 +67,7 @@ export default {
         },
         {
           key: "filmOffset",
-          defaultValue: 20,
+          defaultValue: 0,
           sliderMin: -100,
           sliderMax: 100,
         },
