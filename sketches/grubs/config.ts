@@ -32,6 +32,13 @@ export const uniformsParamsConfig = [
         valueType: "rgb",
       },
       {
+        key: "bgOpacity",
+        title: "Background Opacity",
+        defaultValue: 1,
+        sliderMin: 0,
+        sliderMax: 1,
+      },
+      {
         key: "bgRotSpeed",
         title: "Background Rot Speed",
         defaultValue: 0,

@@ -3,6 +3,7 @@
   "dependencies": {
     "@fontsource/bytesized": "^5.2.4",
     "@fontsource/tiny5": "^5.2.7",
+    "@tweenjs/tween.js": "^25.0.0",
     "three": "^0.185.1",
     "three-stdlib": "^2.36.0",
     "tsl-textures": "^2.5.1"

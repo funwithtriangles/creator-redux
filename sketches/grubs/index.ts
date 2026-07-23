@@ -120,10 +120,14 @@ export default class Grubs {
   constructor() {
     const geometry = new SphereGeometry(1, sphereDetail, sphereDetail);
     this.headMat = new MeshMatcapMaterial();
-    this.giantHeadMat = new MeshMatcapNodeMaterial({ side: BackSide });
+    this.giantHeadMat = new MeshMatcapNodeMaterial({
+      side: BackSide,
+      transparent: true,
+    });
     this.bodyMat = new MeshMatcapMaterial();
     this.headMat.colorNode = vec3(2, 2, 2);
     this.giantHeadMat.colorNode = this.uniforms.bgColor;
+    this.giantHeadMat.opacityNode = this.uniforms.bgOpacity;
 
     this.giantHeadMat.positionNode = positionLocal.add(
       normalLocal

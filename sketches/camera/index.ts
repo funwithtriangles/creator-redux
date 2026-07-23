@@ -38,8 +38,6 @@ export default class Camera {
 
   constructor(sketchApi: SketchConstructorArg) {
     this.root = new THREE.Group();
-    // this.scene = scene;
-    // this.scene.add(camera);
 
     this.sketchApi = sketchApi;
     const { camera, scene } = sketchApi;
@@ -94,6 +92,7 @@ export default class Camera {
           this.currentMode = "closeUp";
         }
       } else {
+        this.sketchApi.scene.add(this.sketchApi.camera);
         this.currentMode = "orbit";
       }
     }
