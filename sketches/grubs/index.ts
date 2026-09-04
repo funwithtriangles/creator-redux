@@ -55,6 +55,7 @@ export default class Grubs {
   segments: Segment[] = [];
   time = 0;
   pulseTime = 0;
+  squirmTime = 0;
   smoothedGrubSpacingX = Number.NaN;
   smoothedSegSpacing = Number.NaN;
   smoothedSquirmFreq = Number.NaN;
@@ -250,6 +251,7 @@ export default class Grubs {
 
     this.time += travelDelta;
     this.pulseTime += delta;
+    this.squirmTime += delta * p.squirmSpeed;
     this.time = this.time % this.smoothedGrubSpacingX;
 
     const rowArc = TAU / ROW_COUNT;
@@ -286,9 +288,11 @@ export default class Grubs {
         ((((xRaw + wrapLimit * 2) % wrapSpan) + wrapSpan) % wrapSpan) -
         wrapLimit;
       const y =
-        rowCenterY + Math.cos(x * this.smoothedSquirmFreq) * p.squirmAmpY;
+        rowCenterY +
+        Math.cos(x * this.smoothedSquirmFreq + this.squirmTime) * p.squirmAmpY;
       const z =
-        rowCenterZ + Math.sin(x * this.smoothedSquirmFreq) * p.squirmAmpZ;
+        rowCenterZ +
+        Math.sin(x * this.smoothedSquirmFreq + this.squirmTime) * p.squirmAmpZ;
 
       const pulsePhase =
         this.pulseTime -
@@ -298,9 +302,15 @@ export default class Grubs {
       const pulseWave = Math.sin(pulsePhase);
       const tailTaper = 1 - t * p.tailTaper;
       const headTaper = 1 - (1 - t) * p.headTaper;
+
+      const headScale = isHead ? p.headScale : 1;
       const radius = Math.max(
         0,
-        p.segScale * tailTaper * headTaper * (1 + pulseWave * p.pulseAmp),
+        p.segScale *
+          headScale *
+          tailTaper *
+          headTaper *
+          (1 + pulseWave * p.pulseAmp),
       );
 
       this.instanceHelper.position.set(x, y, z);

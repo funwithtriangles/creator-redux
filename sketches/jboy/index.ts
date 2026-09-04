@@ -2,11 +2,14 @@ import * as THREE from "three";
 import jboyGlb from "./jboy.glb";
 
 import { Model } from "./Model/Model.ts";
-import { MeshStandardNodeMaterial } from "three/webgpu";
+import { MeshStandardNodeMaterial, Node, PassNode } from "three/webgpu";
 import {
+  float,
   Fn,
+  mrt,
   mx_noise_float,
   normalLocal,
+  output,
   positionLocal,
   uniform,
   vec4,
@@ -60,7 +63,9 @@ export default class Jboy {
 
     this.material.positionNode = Fn(() => {
       const wobble = mx_noise_float(
-        vec4(positionLocal.mul(this.uniforms.wobbleFreq).add(this.displaceTime))
+        vec4(
+          positionLocal.mul(this.uniforms.wobbleFreq).add(this.displaceTime),
+        ),
       ).mul(this.uniforms.wobbleAmp);
       const position = positionLocal.add(normalLocal.mul(wobble));
 
@@ -68,6 +73,8 @@ export default class Jboy {
     })();
 
     this.material.transparent = true;
+
+    this.material.mrtNode = mrt({ mask: float(1) });
   }
 
   randomFrame() {
@@ -111,5 +118,16 @@ export default class Jboy {
     this.material.color.set(...p.color);
 
     updateUniforms(jboyMatUniformsConfig, this.uniforms, p);
+  }
+
+  getWebGPUPass(prevPass: Node, renderPassNode: PassNode): Node {
+    renderPassNode.setMRT(
+      mrt({
+        output,
+        mask: float(0),
+      }),
+    );
+
+    return prevPass;
   }
 }

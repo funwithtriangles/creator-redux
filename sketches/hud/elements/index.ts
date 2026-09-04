@@ -84,7 +84,7 @@ export class Hud {
     p = mix(
       input,
       p.mul(hudColor),
-      step(float(0.001), p.sub(input).length().mul(uniforms.hud_opacity)),
+      p.sub(input).length().mul(uniforms.hud_opacity),
     );
 
     return p;

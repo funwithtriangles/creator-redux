@@ -124,6 +124,13 @@ export default {
           sliderMax: 2,
         },
         {
+          key: "headScale",
+          title: "Head Scale",
+          defaultValue: 1,
+          sliderMin: 0.1,
+          sliderMax: 2,
+        },
+        {
           key: "speed",
           title: "Speed",
           defaultValue: 1,
@@ -179,6 +186,13 @@ export default {
           defaultValue: 3,
           sliderMin: 0,
           sliderMax: 12,
+        },
+        {
+          key: "squirmSpeed",
+          title: "Squirm Speed",
+          defaultValue: 0,
+          sliderMin: 0,
+          sliderMax: 1,
         },
         {
           key: "matcapFileName",
